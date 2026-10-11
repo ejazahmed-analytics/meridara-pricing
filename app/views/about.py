@@ -54,15 +54,14 @@ def render(cur):
                 "they disagree.\n"
                 "- **Numbers come from the data.** Every takeaway sentence is generated from the databases, so the text stays "
                 "accurate when the data changes.\n"
-                "- **Neutral look.** Navy, royal blue, teal and coral, with amber only for small touches, so it resembles no "
-                "real airline's brand. Text is dark navy and meets contrast guidelines.\n"
+                "- **Readable design.** Dark text on light backgrounds, built to read well on desktop and mobile.\n"
                 "- **Honest labels.** The disclaimer is on every page, and charts note simplifications.")
     with right:
         with c.panel("Guardrails"):
             st.markdown(
                 "- **Fictional carrier only.** Meridara, with the hub labelled HUB. No real airline names, logos or colours.\n"
                 "- **Synthetic data only.** No employer data or methods; only textbook and published revenue management methods.\n"
-                "- **Honest modelling.** A model is called machine learning only if it is trained and tested on separate data.\n"
+                "- **Tested on unseen data.** Every model is evaluated on months it never saw during training.\n"
                 "- **Stated simplifications.** For example, a one-way fare is set at 60% of the return fare.")
 
     with c.panel("Tools used"):
@@ -100,4 +99,4 @@ def render(cur):
         "**Where things live.** `sql/` has the schema, `src/` the pipeline, `app/` this app, `data/` the databases, and `docs/` "
         "the data dictionary, assumptions and model results.\n\n"
         "**Checks.** Sanity checks compare the generated data with the agreed inputs (load factors, fares, segment mix, booking "
-        "curves, point-of-sale shares); every page is tested under all five currencies, and text contrast is audited.")
+        "curves, point-of-sale shares); every page is tested under all five currencies.")

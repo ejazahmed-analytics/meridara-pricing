@@ -59,13 +59,13 @@ def render(cur):
     # Story hero with four big numbers
     st.markdown(
         f'<div class="story-hero"><div class="story-kicker">MERIDARA &middot; DATA STORY &middot; HELD-OUT FLIGHTS, SEP 2025 TO FEB 2026</div>'
-        f'<div class="story-title">Continuous pricing earns more; a route load factor floor keeps the network whole</div>'
+        f'<div class="story-title">Continuous pricing beats the bucket rule, and a route load factor floor keeps the network whole</div>'
         f'<div class="story-intro">A replay of {n_test:,} simulated flights under fare buckets and continuous pricing, '
         f'seen through three lenses: pricing, network and station.</div>'
         f'<div class="story-stats">'
-        f'<div><div class="story-num">{h["gain"]:+.1f}%</div><div class="story-cap">Revenue, continuous vs as flown</div></div>'
-        f'<div><div class="story-num">{h["gain_lf"]:+.1f}%</div><div class="story-cap">With route load factor floor</div></div>'
-        f'<div><div class="story-num">{ct.load_factor:.0f}%</div><div class="story-cap">Continuous load factor (as flown {obs.load_factor:.0f}%)</div></div>'
+        f'<div><div class="story-num">{h["gain_bk"]:+.1f}%</div><div class="story-cap">Continuous vs buckets, same customers</div></div>'
+        f'<div><div class="story-num">{h["gain_lf_bk"]:+.1f}%</div><div class="story-cap">Route floor vs buckets, at the as-flown load factor</div></div>'
+        f'<div><div class="story-num">{h["gain"]:+.1f}%</div><div class="story-cap">Continuous vs as flown (an upper reference)</div></div>'
         f'<div><div class="story-num">{g90:.0f}%</div><div class="story-cap">Forecast error at 90 days (baseline {b90:.0f}%)</div></div>'
         f'</div></div>', unsafe_allow_html=True)
 
@@ -95,7 +95,7 @@ def render(cur):
                                    marker_color=[c.POLICY_COLORS[p] for p in order],
                                    text=[f"{r.revenue / 1e6:,.1f}" for r in rows], textposition="outside"))
             fig.update_yaxes(range=[0, max(r.revenue for r in rows) / 1e6 * 1.18])
-            c.chart(fig, f"Continuous pricing {h['gain']:+.1f}% and the route floor {h['gain_lf']:+.1f}% against as flown.",
+            c.chart(fig, f"Continuous pricing earns {c.vs_text(h['gain_bk'])} than buckets; as flown is the higher reference.",
                     280, legend=False)
 
     # 2. Three lenses
@@ -154,28 +154,37 @@ def render(cur):
                                          marker=dict(size=16, color=c.POLICY_COLORS[p]), textfont=dict(color=c.NAVY)))
             fig.update_xaxes(title="Load factor (%)", range=[65, 99])
             fig.update_yaxes(title=f"Revenue ({cur} millions)")
-            c.chart(fig, f"Continuous pricing gives up {obs.load_factor - ct.load_factor:.0f} points of load factor for yield; the "
-                         f"route floor wins back volume without losing revenue.", 300, legend=False)
+            c.chart(fig, f"Buckets reach {bk.load_factor:.0f}% by selling cheap seats; the route floor earns the most of the "
+                         f"three policies at the as-flown load factor ({lf.load_factor:.0f}%).", 300, legend=False)
 
     left, right = st.columns(2)
     with left:
         with c.panel("Forecast error by look-ahead (%)"):
             leads = [90, 60, 30, 14, 7]
+            labels = [str(x) for x in leads]
+            base_err = [_metric(acc, "baseline", "all test flights except Berlin", x) for x in leads]
+            model_err = [_metric(acc, "gbm", "all test flights except Berlin", x) for x in leads]
             fig = go.Figure()
-            fig.add_bar(x=[str(x) for x in leads], y=[_metric(acc, "baseline", "all test flights except Berlin", x) for x in leads],
-                        name="Pickup baseline", marker_color=c.CORAL)
-            fig.add_bar(x=[str(x) for x in leads], y=[_metric(acc, "gbm", "all test flights except Berlin", x) for x in leads],
-                        name="Gradient boosting", marker_color=c.ROYAL)
+            fig.add_bar(x=labels, y=base_err, name="Pickup baseline", marker_color=c.CORAL,
+                        text=[f"{v:.1f}" for v in base_err], textposition="outside")
+            fig.add_bar(x=labels, y=model_err, name="Gradient boosting", marker_color=c.ROYAL,
+                        text=[f"{v:.1f}" for v in model_err], textposition="outside")
             fig.update_layout(barmode="group")
-            fig.update_xaxes(title="Days before departure")
+            fig.update_xaxes(type="category", categoryorder="array", categoryarray=labels,
+                             title="Days before departure")
+            fig.update_yaxes(title="Forecast error, %", range=[0, max(base_err) * 1.2])
             c.chart(fig, f"The model's error is {g90:.0f}% at 90 days against {b90:.0f}% for the baseline; the gap closes in the last week.", 280)
     with right:
         with c.panel("Price sensitivity by segment (elasticity, 95% range)"):
+            seg_names = [c.SEGMENT_NAMES[i] for i in low.index]
             fig = go.Figure(go.Scatter(
-                x=low.estimate, y=[c.SEGMENT_NAMES[i] for i in low.index], mode="markers",
+                x=low.estimate, y=seg_names, mode="markers+text", text=[f"{v:.2f}" for v in low.estimate],
+                textposition="top center", textfont=dict(color=c.NAVY, size=13),
                 marker=dict(size=12, color=c.NAVY),
                 error_x=dict(type="data", symmetric=False, array=(low.ci_high - low.estimate).values,
                              arrayminus=(low.estimate - low.ci_low).values, color=c.ROYAL, thickness=3)))
+            fig.add_vline(x=-1, line_dash="dot", line_color="#9FB1CE", line_width=2,
+                          annotation_text="-1", annotation_position="top", annotation_font_color=c.NAVY)
             fig.update_xaxes(title="Elasticity (more negative = more price sensitive)")
             c.chart(fig, f"Business is least price sensitive ({low.estimate[1]:.2f}) and Leisure most ({low.estimate[2]:.2f}), "
                          f"but the ranges are wide.", 280, legend=False)
@@ -183,7 +192,8 @@ def render(cur):
     a, b, d = st.columns(3)
     with a:
         _callout("opp", "Opportunity: route load factor floor",
-                 f"Revenue {h['gain_lf']:+.1f}% against as flown at {lf.load_factor:.0f}% load factor; {network.floor_phrase(lost_conn_lf)}.")
+                 f"Revenue {h['gain_lf_bk']:+.1f}% against buckets at {lf.load_factor:.0f}% load factor (as flown {obs.load_factor:.0f}%); "
+                 f"{network.floor_phrase(lost_conn_lf)}.")
     with b:
         _callout("watch", "Watch: Berlin cold start",
                  f"First-month forecast error {ber1:.0f}% against {fra1:.0f}% for Frankfurt; use bucket control for the first weeks.")
@@ -196,8 +206,9 @@ def render(cur):
     st.markdown("#### 5. How I read it as an analyst")
     st.markdown('<div class="draft">DRAFT - for the author to rewrite in their own words</div>', unsafe_allow_html=True)
     st.markdown(
-        f"The revenue gain is real inside the simulation, but unconstrained it comes from selling fewer seats at higher "
-        f"prices. Business customers are barely price sensitive, so higher prices cost little volume there, while Leisure "
+        f"On the same customers continuous pricing beats the bucket rule, but unconstrained it does so by selling fewer "
+        f"seats at higher prices, and it still earns {c.vs_text(h['gain'])} than as flown, which sets fares customer by "
+        f"customer. Business customers are barely price sensitive, so higher prices cost little volume there, while Leisure "
         f"and VFR customers are price sensitive and walk away, and that is where the connecting passengers sit: about "
         f"{lost_conn:,.0f} are priced out. The forecast is good enough to price from on established routes and not yet on "
         f"Berlin. The result also leans on a price sensitivity estimate with a wide range, so I would not roll it out "
@@ -206,7 +217,8 @@ def render(cur):
     st.markdown('<div class="draft">DRAFT - for the author to rewrite in their own words</div>', unsafe_allow_html=True)
     st.markdown(
         f'<div class="callout"><div class="callout-main">Adopt continuous pricing with a route-level load factor floor</div>'
-        f'Revenue {h["gain_lf"]:+.1f}% against as flown, load factor {lf.load_factor:.0f}%. Without the floor about '
+        f'Revenue {h["gain_lf_bk"]:+.1f}% against the bucket rule at a load factor of {lf.load_factor:.0f}% (as flown '
+        f'{obs.load_factor:.0f}%). Without the floor about '
         f'{lost_conn:,.0f} connecting passengers are lost; {network.floor_phrase(lost_conn_lf)}. Start on the established '
         f'routes, keep bucket control on Berlin for its first weeks, and re-estimate price sensitivity from live promotions '
         f'every quarter.</div>', unsafe_allow_html=True)
@@ -234,7 +246,10 @@ def render(cur):
             "- Observed bookings are capped by seats, so demand on full flights is understated and the replay is conservative there.\n"
             "- The replay prices originating passengers on their outbound leg only, ignores network effects beyond a simple "
             "displacement cost, and assumes a fence below which Business customers cannot buy.\n"
-            "- The headline depends on a price sensitivity estimate with a wide range.\n"
+            "- The headline depends on a price sensitivity estimate with a wide range, and on an assumed spread of willingness "
+            "to pay (0.45; between 0.35 and 0.60 the gain against buckets stays between about +9% and +14%).\n"
+            "- As flown is an upper reference: fares in the simulated data are set customer by customer, which neither replayed "
+            "policy can match. The like-for-like comparison is continuous pricing against the bucket rule.\n"
             "- The route floor earns more than unconstrained continuous pricing because the unconstrained price rule leaves "
             "seats empty; it should be read as a better-tuned policy, not a free gain.\n\n"
             "**Next steps (Version 2):** a stronger directional imbalance in the data, unconstraining demand on full flights, "

@@ -52,6 +52,7 @@ More limitations are added in Phase 6.
 ## Version 2 ideas (out of scope for this version)
 
 - A stronger directional imbalance (for example one-way VFR traffic concentrated toward the home direction) so the Network view shows a clearer directional story. Today, 70 to 92% return travel keeps every route balanced to within about 3% by month.
+- Let the replayed policies price by fare product (for example a flexible product for Business and a saver product for Leisure and VFR, each with its own price). Today both offer one base price per booking period, so neither can match the as-flown fares, which are set customer by customer.
 - Unconstrain demand on full flights so the pricing replay is not conservative on sold-out departures.
 - Use the stored sales channel (direct, NDC, GDS, OTA) in a separate NDC offer and pricing project.
 - Reprice return journeys as a whole in the pricing replay (today the replay prices the outbound leg only).

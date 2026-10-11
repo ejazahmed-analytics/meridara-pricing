@@ -123,7 +123,13 @@ def headline(cur):
     return dict(s=s, obs=obs, bk=bk, ct=ct, lf=lf,
                 gain=100 * (ct.revenue / obs.revenue - 1), gain_bk=100 * (ct.revenue / bk.revenue - 1),
                 gain_lf=100 * (lf.revenue / obs.revenue - 1), bk_vs_obs=100 * (bk.revenue / obs.revenue - 1),
+                gain_lf_bk=100 * (lf.revenue / bk.revenue - 1),
                 pax_ct=100 * (ct.pax / obs.pax - 1), pax_lf=100 * (lf.pax / obs.pax - 1))
+
+
+def vs_text(x):
+    """'4.7% more' or '4.7% less' for a percentage difference."""
+    return f"{abs(x):.1f}% {'more' if x >= 0 else 'less'}"
 
 
 def floor_vs_continuous(h):
@@ -159,7 +165,8 @@ def hero(title, question, cur=None):
     if cur:
         pills.append(f"Currency: {cur}")
     pill_html = "".join(f'<span class="pill">{p}</span>' for p in pills)
-    st.markdown(f'<div class="hero"><div class="hero-left"><div class="hero-title">{title}</div>'
+    st.markdown(f'<div class="hero"><div class="hero-left"><div class="hero-brand">MERIDARA <span>PRICING CASE STUDY</span></div>'
+                f'<div class="hero-title">{title}</div>'
                 f'<div class="hero-q">{question}</div></div><div class="hero-pills">{pill_html}</div></div>',
                 unsafe_allow_html=True)
     st.markdown(f'<div class="disclaimer">{DISCLAIMER}</div>', unsafe_allow_html=True)
@@ -230,7 +237,7 @@ CSS = f"""
 <style>
 /* Page frame: navy header, light page background, navy text */
 .stApp {{ background: {BG}; color: {NAVY}; }}
-header[data-testid="stHeader"] {{ background: {NAVY}; }}
+header[data-testid="stHeader"] {{ background: {NAVY}; height: 2.6rem; min-height: 2.6rem; }}
 header[data-testid="stHeader"] * {{ color: #FFFFFF !important; fill: #FFFFFF !important; }}
 [data-testid="stMainBlockContainer"] {{ padding: 0 2rem 2rem 2rem !important; max-width: 1280px; }}
 .stApp p, .stApp li, .stApp label, .stApp span, .stApp div[data-testid="stMarkdownContainer"],
@@ -238,9 +245,12 @@ header[data-testid="stHeader"] * {{ color: #FFFFFF !important; fill: #FFFFFF !im
 h1, h2, h3, h4 {{ color: {NAVY} !important; }}
 
 /* Navy hero band, full width, with pills on the right */
-.hero {{ background: {NAVY}; margin: 0 -2rem 0.9rem -2rem; padding: 4.2rem 2rem 1.2rem 2rem;
+.hero {{ background: {NAVY}; margin: 0 -2rem 0.9rem -2rem; padding: 3.1rem 2rem 1.2rem 2rem;
          box-shadow: 0 0 0 100vmax {NAVY}; clip-path: inset(0 -100vmax);
          display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: flex-end; justify-content: space-between; }}
+.hero-brand {{ color: #FFFFFF !important; font-weight: 800; letter-spacing: 0.14em; font-size: 0.85rem;
+              border-left: 4px solid {AMBER}; padding-left: 0.55rem; margin-bottom: 0.45rem; }}
+.hero-brand span {{ font-weight: 600; letter-spacing: 0.06em; font-size: 0.75rem; margin-left: 0.4rem; }}
 .hero-title {{ color: #FFFFFF !important; font-size: 1.9rem; font-weight: 800; line-height: 1.2; }}
 .hero-q {{ color: #FFFFFF !important; font-size: 1rem; margin-top: 0.3rem; }}
 .hero-pills {{ display: flex; flex-wrap: wrap; gap: 0.4rem; }}
@@ -333,7 +343,7 @@ div[data-baseweb="select"] span, div[data-baseweb="select"] div {{ color: {NAVY}
 
 @media (max-width: 640px) {{
   [data-testid="stMainBlockContainer"] {{ padding: 0 1rem 2rem 1rem !important; }}
-  .hero {{ margin: 0 -1rem 0.9rem -1rem; padding: 4.2rem 1rem 1rem 1rem; }}
+  .hero {{ margin: 0 -1rem 0.9rem -1rem; padding: 3.1rem 1rem 1rem 1rem; }}
   .hero-title {{ font-size: 1.45rem; }} .kpi-value {{ font-size: 1.7rem; }}
 }}
 </style>

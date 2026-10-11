@@ -42,7 +42,7 @@ def render(cur):
          f"-{100 * (1 - mm['gbm', 30] / mm['baseline', 30]):.0f}%", True),
         ("Forecast error, 90 days out", f"{mm['gbm', 90]:.1f}%", f"pickup baseline {mm['baseline', 90]:.1f}%", c.TEAL,
          f"-{100 * (1 - mm['gbm', 90] / mm['baseline', 90]):.0f}%", True),
-        ("Continuous pricing vs as flown", f"{h['gain']:+.1f}%", f"vs buckets {h['gain_bk']:+.1f}%", c.CORAL),
+        ("Continuous vs buckets", f"{h['gain_bk']:+.1f}%", f"vs as flown {h['gain']:+.1f}%", c.CORAL),
         ("Flights flagged at 30 days", f"{n_flag}", f"of {len(tf):,} held-out flights", c.AMBER),
     ])
 
@@ -98,8 +98,11 @@ def render(cur):
                 fig = go.Figure()
                 for pol in ("buckets", "continuous", "continuous_lf"):
                     g = pr[pr.policy == pol].sort_values("period")
+                    dash = "dash" if pol == "continuous_lf" else "solid"
                     fig.add_trace(go.Scatter(x=[c.WINDOWS[p - 1] for p in g.period], y=g.price, mode="lines+markers",
-                                             name=c.POLICY_SHORT[pol], line=dict(color=c.POLICY_COLORS[pol])))
+                                             name=c.POLICY_SHORT[pol] + (" (dashed)" if dash == "dash" else ""),
+                                             line=dict(color=c.POLICY_COLORS[pol], dash=dash, width=3 if dash == "dash" else 2),
+                                             marker=dict(size=7 if dash == "dash" else 9)))
                 fig.update_xaxes(type="category", categoryorder="array", categoryarray=c.WINDOWS,
                                  title="Days before departure")
                 fig.update_yaxes(title=f"One-way price, {cur}")
@@ -156,7 +159,9 @@ def render(cur):
         "**Booking pace vs forecast.** The black line is passengers booked so far; dots are forecasts made at 90, 60, 30, 14 "
         "and 7 days out using only bookings made by then. The model is gradient boosting; the baseline is historical pickup.\n\n"
         "**Recommended price.** The price each policy would offer in each booking period in the pricing replay, in one-way-fare "
-        "terms. Accept the system price unless the flags show unusual demand; override toward the route-floor price when "
+        "terms. Continuous prices rise towards departure because willingness to pay rises; bucket prices step up when the "
+        "advance-purchase rules close the cheapest classes 14 and 7 days out. Where two lines overlap the dashed one is the "
+        "route-floor price. Accept the system price unless the flags show unusual demand; override toward the route-floor price when "
         "volume must be protected.\n\n"
         "**One-way vs return.** The simulated data sets a one-way fare at 60% of the return fare, a stated simplification.\n\n"
         "**Flags.** Booked passengers at 30 days out as a share of seats, compared with the route and direction average "
