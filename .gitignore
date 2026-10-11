@@ -1,0 +1,26 @@
+# Python caches and compiled files
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local Claude Code settings
+.claude/
+
+# Note: data/ is NOT ignored on purpose. The generated CSVs and
+# meridara.db are committed so the deployed app can read them.
+
+# Private working brief (names real carriers in its guardrails)
+PROJECT_BRIEF.md
