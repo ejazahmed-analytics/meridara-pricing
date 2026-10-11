@@ -70,3 +70,14 @@ CREATE TABLE IF NOT EXISTS simulation_price_paths (
     avg_price_eur REAL NOT NULL,
     PRIMARY KEY (scenario, policy, period)
 );
+
+-- Price offered by each policy in the base scenario, per flight, cabin and booking period.
+-- Used by the Pricing and Revenue Management view as the "recommended price".
+CREATE TABLE IF NOT EXISTS simulation_prices (
+    policy     TEXT NOT NULL,
+    flight_id  INTEGER NOT NULL,
+    cabin_id   INTEGER NOT NULL,
+    period     INTEGER NOT NULL,
+    price_eur  REAL NOT NULL,
+    PRIMARY KEY (policy, flight_id, cabin_id, period)
+);

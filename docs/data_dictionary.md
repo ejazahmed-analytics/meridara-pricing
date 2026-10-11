@@ -80,3 +80,18 @@ Adds derived fields to every booking row:
 ## Model output tables (`data/results.db`)
 
 Written by `src/forecast.py`, `src/sensitivity.py` and `src/pricing_sim.py`. Column lists are in `sql/results_schema.sql`. They are kept in a separate file so the 34 MB data file does not change between phases and the git history stays small.
+
+Tables in `results.db`:
+
+| Table | Written by | Meaning |
+| --- | --- | --- |
+| forecast_results | forecast.py | Baseline and gradient boosting forecasts of final passengers per held-out flight and segment, at 90, 60, 30, 14 and 7 days before departure. |
+| model_metrics | forecast.py | Forecast accuracy (WAPE, MAPE, bias) by method, scope and look-ahead, including the Berlin cold-start analysis. |
+| sensitivity_estimates | sensitivity.py | Price and competitor elasticities by segment with 95% ranges, for two samples. |
+| simulation_results | pricing_sim.py | Pricing replay: passengers and revenue per policy, scenario, flight, cabin and segment. |
+| simulation_flights | pricing_sim.py | Seats and returning passengers already booked, per flight and cabin. |
+| simulation_prices | pricing_sim.py | Price offered per policy, flight, cabin and booking period (base scenario). |
+| simulation_price_paths | pricing_sim.py | Average price offered by booking period, policy and scenario. |
+| agg_pos_month, agg_route_month, agg_flights_month, agg_contribution, agg_trip_pricing, agg_origin_test, agg_launch_week, flight_pace | build_app_data.py | Small summaries of the bookings table for the app, in EUR at the departure-month rate. |
+
+Run order: `generate_data.py`, `forecast.py`, `sensitivity.py`, `pricing_sim.py`, `build_app_data.py`, then `streamlit run app/app.py`.

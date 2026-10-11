@@ -14,7 +14,7 @@ This README is a placeholder. The full version is written in Phase 6.
 | 2 | Data | Done |
 | 3 | Forecast | Done |
 | 4 | Sensitivity and simulation | Done |
-| 5 | App | Not started |
+| 5 | App | Built, in review |
 | 6 | Publish | Not started |
 
 ## Data plan
@@ -22,6 +22,20 @@ This README is a placeholder. The full version is written in Phase 6.
 The generator produces 36 months of synthetic departures (March 2023 to February 2026) with a fixed random seed. The first 30 months (March 2023 to August 2025) are used to train the models and the last 6 months (September 2025 to February 2026) are held out for testing.
 
 The window ends in February 2026 and does not model events from March 2026 onward. Berlin launches on 26 October 2025, inside the held-out window.
+
+## Run the app locally
+
+```bash
+pip install -r requirements.txt
+python src/generate_data.py
+python src/forecast.py
+python src/sensitivity.py
+python src/pricing_sim.py
+python src/build_app_data.py
+streamlit run app/app.py
+```
+
+The generated data and results are already in `data/`, so `streamlit run app/app.py` works straight after installing.
 
 ## Limitations
 

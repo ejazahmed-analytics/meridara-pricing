@@ -65,13 +65,18 @@ The held-out flights replayed under two policies facing identical simulated cust
 
 ### Base scenario
 
-| Policy | Revenue (m EUR) | Passengers | Average fare (EUR) | Load factor % |
-| --- | --- | --- | --- | --- |
-| Observed (as flown) | 79.19 | 153,040 | 517 | 76.9 |
-| Buckets | 76.79 | 213,783 | 359 | 93.4 |
-| Continuous | 84.70 | 131,280 | 645 | 70.9 |
+| Policy | Revenue (m EUR) | vs as flown | Passengers | Average fare (EUR) | Load factor % |
+| --- | --- | --- | --- | --- | --- |
+| Observed (as flown) | 79.19 | | 153,040 | 517 | 76.9 |
+| Continuous pricing | 84.70 | +7.0% | 131,280 | 645 | 70.9 |
+| Continuous with a load factor floor | 81.67 | +3.1% | 172,604 | 473 | 82.2 |
+| Simplified buckets (EMSR-b) | 76.79 | -3.0% | 213,783 | 359 | 93.4 |
 
-**Continuous pricing earns 10.3% more revenue than buckets**, with a higher average fare and a lower load factor: it gives up volume for yield, mostly on Leisure and VFR passengers, while Business revenue rises.
+**Headline: continuous pricing earns 7.0% more than as flown**, with a higher average fare and a lower load factor (70.9% against 76.9%). It gives up volume for yield, mostly on Leisure and VFR passengers, while Business revenue rises. Against the simplified bucket policy the gain is 10.3%.
+
+**Why the simplified bucket policy earns less than as flown.** The replay offers one price per booking period to every customer (Business customers are fenced at the 6th price point), so cheap classes dilute yield and the plane fills at a low fare. The as-flown fares also discriminate by segment and booking time, which a single-price replay does not.
+
+**Load factor floor.** Requiring each flight to still reach its as-flown number of originating passengers keeps 45% of the revenue gain (+3.1% against as flown, 81.7m EUR) at a load factor of 82.2%, above the as-flown 76.9%. It leaves the connecting feed whole: Leisure and VFR originating passengers are above as flown instead of about 13,200 below.
 
 | Segment | Revenue change % | Avg fare buckets (EUR) | Avg fare continuous (EUR) |
 | --- | --- | --- | --- |

@@ -6,6 +6,8 @@ Policies, both facing the same simulated customers on every flight:
   * buckets    about 10 fixed one-way price points opened and closed by EMSR-b
   * continuous a price anywhere between the lowest and highest bucket price,
                re-chosen each booking period to maximise expected revenue
+  * continuous_lf (base scenario only) the same, but each flight must still reach
+               its as-flown number of originating passengers (a load factor floor)
 
 Demand for each flight, cabin and segment is sized from observed originating
 passengers, with a constant-elasticity demand curve using the segment price
@@ -145,7 +147,7 @@ def emsr_b_price(prices, mu, c_rem):
     return prices[open_idx]
 
 
-def run_policy(policy, ladder, cust, N_hat, p_ref, belief, share, cap, floor, ceiling):
+def run_policy(policy, ladder, cust, N_hat, p_ref, belief, share, cap, floor, ceiling, target=0):
     """Play one flight and cabin under one policy. Returns pax and revenue by segment and prices by period.
 
     Both policies offer one base price per period. Business-segment customers pay at least the fence
@@ -173,11 +175,18 @@ def run_policy(policy, ladder, cust, N_hat, p_ref, belief, share, cap, floor, ce
             break
         kappa = np.clip((obs + PRIOR_PAX) / (expc + PRIOR_PAX), 0.3, 3.0)
         w = N_hat * rem[:, t] * kappa
-        if policy == "continuous":
+        if policy in ("continuous", "continuous_lf"):
             seg_d = dem_grid * w[None, :]                                  # expected buyers by segment
             total = seg_d.sum(1)
             scale = np.minimum(1.0, c_rem / np.maximum(total, 1e-9))
-            price = grid[np.argmax(scale * (seg_d * eff_grid).sum(1))]
+            revenue = scale * (seg_d * eff_grid).sum(1)
+            if policy == "continuous_lf":
+                # Highest-revenue price that still reaches the as-flown passenger count.
+                needed = max(target - pax.sum(), 0.0)
+                enough = scale * total >= needed
+                price = grid[np.argmax(np.where(enough, revenue, -1.0))] if enough.any() else grid[0]
+            else:
+                price = grid[np.argmax(revenue)]
         else:
             d = dem_class @ w
             mu = np.maximum(d - np.append(d[1:], 0.0), 1e-9)               # demand in each fare band
@@ -203,12 +212,12 @@ def main():
     print(f"{test.flight_id.nunique():,} held-out flights, {len(cells):,} demand cells, "
           f"{int(cells.N.sum()):,} originating passengers\n")
 
-    results, flights_tab, paths = [], [], []
+    results, flights_tab, paths, price_rows = [], [], [], []
     by_flight = {k: g for k, g in cells.groupby(["flight_id", "cabin_id"])}
     for si, scen in enumerate(SCENARIOS):
         belief, world, scale, bias = scenario_world(sens, scen)
-        price_sum = {p: np.zeros(PERIODS) for p in ("buckets", "continuous")}
-        price_n = {p: np.zeros(PERIODS) for p in ("buckets", "continuous")}
+        price_sum = {p: np.zeros(PERIODS) for p in ("buckets", "continuous", "continuous_lf")}
+        price_n = {p: np.zeros(PERIODS) for p in ("buckets", "continuous", "continuous_lf")}
         for (fid, cabin), g in by_flight.items():
             cap_total = caps.loc[fid, "capacity_business" if cabin == 2 else "capacity_economy"]
             inb = int(ib.get((fid, cabin), 0))
@@ -224,30 +233,37 @@ def main():
             rng = np.random.default_rng([SEED, int(fid), cabin, si])
             cust = make_customers(N, p_ref, world, scale, share, rng)
             ladder = lad[(meta.loc[fid, "route_id"], cabin, meta.loc[fid, "ladder"])]
-            for policy in ("buckets", "continuous"):
+            for policy in (("buckets", "continuous", "continuous_lf") if scen == "base"
+                           else ("buckets", "continuous")):
                 pax, rev, prices = run_policy(policy, ladder, cust, N_hat, p_ref, belief, share, cap,
-                                              ladder[0], ladder[-1])
+                                              ladder[0], ladder[-1], target=min(N.sum(), cap))
                 for s in range(3):
                     results.append((scen, policy, fid, cabin, s + 1, int(pax[s]), float(rev[s])))
                 ok = ~np.isnan(prices)
                 price_sum[policy][ok] += prices[ok]
                 price_n[policy][ok] += 1
+                if si == 0:
+                    price_rows += [(policy, int(fid), cabin, k + 1, float(prices[k])) for k in np.flatnonzero(ok)]
             if si == 0:
                 for s in range(3):
                     results.append(("base", "observed", fid, cabin, s + 1, int(N[s]), float(N[s] * p_ref[s])))
         for policy in price_sum:
+            if price_n[policy].sum() == 0:
+                continue
             for t in range(PERIODS):
                 paths.append((scen, policy, t + 1, price_sum[policy][t] / max(price_n[policy][t], 1)))
         print(f"scenario {scen} done")
 
     res = pd.DataFrame(results, columns=["scenario", "policy", "flight_id", "cabin_id", "segment_id",
                                          "pax", "revenue_eur"])
-    rc = open_results(["simulation_results", "simulation_flights", "simulation_price_paths"])
+    rc = open_results(["simulation_results", "simulation_flights", "simulation_price_paths", "simulation_prices"])
     res.round(2).to_sql("simulation_results", rc, if_exists="append", index=False)
     pd.DataFrame(flights_tab, columns=["flight_id", "cabin_id", "capacity", "inbound_pax"]).to_sql(
         "simulation_flights", rc, if_exists="append", index=False)
     pd.DataFrame(paths, columns=["scenario", "policy", "period", "avg_price_eur"]).round(2).to_sql(
         "simulation_price_paths", rc, if_exists="append", index=False)
+    pd.DataFrame(price_rows, columns=["policy", "flight_id", "cabin_id", "period", "price_eur"]).round(2).to_sql(
+        "simulation_prices", rc, if_exists="append", index=False)
     rc.commit()
     rc.close()
     report(res, test, pd.DataFrame(flights_tab, columns=["flight_id", "cabin_id", "capacity", "inbound_pax"]),
@@ -267,7 +283,7 @@ def report(res, test, ft, paths):
     names = {1: "Frankfurt", 2: "Berlin", 3: "London", 4: "Paris", 5: "Milan", 6: "Madrid"}
     print("\n## Headline (base scenario, all held-out flights; revenue in millions EUR, one-way-fare terms)\n")
     rows = []
-    for pol in ("observed", "buckets", "continuous"):
+    for pol in ("observed", "buckets", "continuous", "continuous_lf"):
         r = res[(res.scenario == "base") & (res.policy == pol)]
         rows.append({"Policy": pol, "Revenue": r.revenue_eur.sum() / 1e6, "Passengers": r.pax.sum(),
                      "Average fare EUR": r.revenue_eur.sum() / r.pax.sum(), "Load factor %": load_factor(r, ft)})
