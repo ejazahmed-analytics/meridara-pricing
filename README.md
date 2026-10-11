@@ -30,9 +30,19 @@ The window ends in February 2026 and does not model events from March 2026 onwar
 
 - **Constrained demand.** Bookings cannot exceed seats. Demand that was turned away on full flights is not recorded, as in real booking data, so booked volumes understate true demand on full flights.
 - **Departure-month FX.** Fares are stored in the sales currency and converted to other currencies at the European Central Bank monthly average rate for the month each flight leg departs. AED is derived from the USD peg (3.6725 AED per USD).
+- **Station revenue is point-of-sale revenue.** About half of total leg revenue is sold at the HUB (31%) or beyond-hub cities (18%), because journeys that start there are mostly sold there. A Station view therefore shows only the share of its routes' revenue sold at its own point of sale.
 - **Journeys.** Bookings are journeys with one or two flight legs. A one-way fare is always 60% of the return fare, a stated simplification.
 
 More limitations are added in Phase 6.
+
+## Version 2 ideas (out of scope for this version)
+
+- A stronger directional imbalance (for example one-way VFR traffic concentrated toward the home direction) so the Network view shows a clearer directional story. Today, 70 to 92% return travel keeps every route balanced to within about 3% by month.
+- Unconstrain demand on full flights so the pricing replay is not conservative on sold-out departures.
+- Use the stored sales channel (direct, NDC, GDS, OTA) in a separate NDC offer and pricing project.
+- Reprice return journeys as a whole in the pricing replay (today the replay prices the outbound leg only).
+- Bid-price control with network (origin and destination) optimisation instead of leg-level control.
+- Model the beyond-hub flights explicitly instead of treating them as connecting origins and destinations.
 
 ## Environment
 

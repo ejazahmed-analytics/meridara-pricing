@@ -85,7 +85,7 @@ Leg fare relative to the local average on the same leg:
 network contribution = through_fare - estimated displacement cost on the beyond-hub leg
 
 - This is a deliberately simple version. It is not bid-price logic, which is left for a later project.
-- The displacement cost is a fixed assumption per beyond-hub city, season and cabin. The values are shown to the owner for review in Phase 2 and loaded only after approval (the `displacement_costs` table is created empty).
+- The displacement cost is a fixed assumption per beyond-hub city, season and cabin: cost = chance the beyond-hub seat would sell to someone else (low 25%, shoulder 40%, summer 60%, Christmas 65%) x average local fare on that leg (Economy: Bangkok 260, Sydney 480, Nairobi 300, Mumbai 190; Business: 1,100, 1,900, 1,200, 800 EUR). The owner approved these values. They are loaded into `displacement_costs`.
 - Local passengers are compared on leg revenue only, since they use no beyond-hub seat.
 
 ## 4. Segment mix (% of passengers, local and connecting combined)

@@ -162,6 +162,12 @@ CHANNEL_MIX = np.array([[.30, .08, .50, .12],   # placeholder, not calibrated
                         [.30, .07, .08, .55],
                         [.28, .04, .06, .62]])
 
+# Displacement cost of a connecting passenger on the beyond-hub leg (EUR per passenger):
+# chance the seat would have sold to someone else x average local fare on that leg.
+# Both inputs are assumptions approved by the owner. Order: Bangkok, Sydney, Nairobi, Mumbai.
+DISPLACEMENT_PROB = {"low": .25, "shoulder": .40, "summer": .60, "christmas": .65}
+DISPLACEMENT_FARE = {1: [260, 480, 300, 190], 2: [1100, 1900, 1200, 800]}
+
 TARGET_BIAS = {1: 0.96, 2: 1.12, 3: 1.03, 4: 0.99, 5: 1.06, 6: 0.94}  # target / actual
 
 # ---------------------------------------------------------------------
@@ -204,6 +210,14 @@ def build_proration(routes):
                 factor = round(CITY_LEG_SHARE[city] * SPEC[r.station_id]["pro_adj"], 3)
                 rows.append(dict(route_id=r.route_id, beyond_city_id=city + 1,
                                  cabin_id=cabin, factor=factor))
+    return pd.DataFrame(rows)
+
+
+def build_displacement_costs():
+    """Displacement cost per beyond-hub city, season and cabin."""
+    rows = [dict(beyond_city_id=c + 1, season=s, cabin_id=cabin,
+                 cost_eur_per_pax=round(prob * DISPLACEMENT_FARE[cabin][c], 1))
+            for cabin in (1, 2) for c in range(4) for s, prob in DISPLACEMENT_PROB.items()]
     return pd.DataFrame(rows)
 
 
@@ -814,6 +828,7 @@ def main():
         "fx_rates": fx,
         "proration_factors": pro_df,
         "revenue_targets": targets,
+        "displacement_costs": build_displacement_costs(),
     }
     out = write_database(args.db, tables, b)
 
