@@ -33,6 +33,7 @@ Database: `data/meridara.db` (SQLite). Model outputs are in `data/results.db` (s
 | proration_factors | Route, beyond-hub city and cabin | factor = share of a connecting through fare attributed to the European leg. |
 | displacement_costs | Beyond-hub city, season, cabin | cost_eur_per_pax = chance the seat sells to someone else x average local fare on that leg. Assumption approved by the owner. |
 | revenue_targets | European station and month | target_revenue_eur: synthetic budget for revenue sold at that station's point of sale, set in advance (same month last year times a growth factor, a planned curve in the first year, a launch plan for Berlin). |
+| fare_trend | month | trend_index: market fare drift (3% a year, centred on September 2024) applied to fare ladders, ceilings and floors. |
 
 ## Bookings (one row per flight leg of a booking)
 
@@ -96,3 +97,9 @@ Tables in `results.db`:
 | agg_pos_month, agg_route_month, agg_flights_month, agg_contribution, agg_trip_pricing, agg_origin_test, agg_launch_week, flight_pace | build_app_data.py | Small summaries of the bookings table for the app, in EUR at the departure-month rate. |
 
 Run order: `generate_data.py`, `forecast.py`, `sensitivity.py`, `pricing_sim.py`, `build_app_data.py`, then `streamlit run app/app.py`.
+
+### Calibration tables
+| Table | Content |
+| --- | --- |
+| simulation_calibration | Chosen bucket settings (protection scale, fences, advance-purchase variant) and the calibration gap. |
+| simulation_calibration_check | As-flown vs bucket-replay revenue, passengers and load factor, for the training and test periods. |

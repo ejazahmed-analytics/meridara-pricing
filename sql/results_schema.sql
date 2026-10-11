@@ -90,3 +90,17 @@ CREATE TABLE IF NOT EXISTS simulation_floor (
     achieved_load_factor REAL NOT NULL,
     bonus_eur            REAL NOT NULL
 );
+
+-- Calibration of the bucket policy: the fitted settings and how well the replay reproduces as flown.
+CREATE TABLE IF NOT EXISTS simulation_calibration (
+    item  TEXT PRIMARY KEY,
+    value REAL NOT NULL,
+    note  TEXT
+);
+CREATE TABLE IF NOT EXISTS simulation_calibration_check (
+    period       TEXT NOT NULL,         -- 'training' (fitted) or 'test'
+    policy       TEXT NOT NULL,         -- 'as flown' or 'bucket replay'
+    revenue_eur  REAL NOT NULL,
+    passengers   INTEGER,
+    load_factor  REAL NOT NULL
+);

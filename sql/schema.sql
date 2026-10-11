@@ -122,6 +122,13 @@ CREATE TABLE fare_buckets (
     PRIMARY KEY (route_id, cabin_id, ladder, class_rank)
 );
 
+-- Market fare trend by month (1.00 at September 2024). The fare ladders in fare_buckets are at that
+-- price level; the price actually offered on a flight is the ladder price times this index.
+CREATE TABLE fare_trend (
+    month       TEXT PRIMARY KEY,      -- 'YYYY-MM'
+    trend_index REAL NOT NULL
+);
+
 -- A competing-hub price index per route and week (no real airline named).
 -- 100 = same price level as Meridara; 110 = competitor is 10% dearer.
 CREATE TABLE competitor_index (

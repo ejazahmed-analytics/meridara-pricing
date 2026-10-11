@@ -38,7 +38,7 @@ def render(cur):
             ("2", "Store", "Everything is loaded into SQLite with SQL tables and views.", c.TEAL),
             ("3", "Forecast", "Pickup baseline and gradient boosting, tested on held-out months.", c.CORAL),
             ("4", "Estimate", "Price sensitivity by segment from random promotions.", c.AMBER),
-            ("5", "Replay", "Fare buckets and continuous pricing on the same simulated customers.", c.ROYAL),
+            ("5", "Replay", "Calibrate the bucket policy on the training period, then compare it with continuous pricing.", c.ROYAL),
             ("6", "Present", "Summary tables feed this Streamlit app, with a currency filter.", c.TEAL),
         ]
         st.markdown('<div class="flow">' + "".join(_step(*s) for s in steps) + "</div>", unsafe_allow_html=True)
@@ -83,7 +83,7 @@ def render(cur):
             "the same code always produces the same data. It simulates 36 months of departures between "
             f"{d0} and {d1}, with journeys that are one-way or return, three passenger segments, fare ladders, "
             "seasons, events such as Easter, Eid and Diwali, a competing-hub price index and a new route launch. Fares drift up "
-            "7.5% a year, so the market grows, and station revenue targets are budgets set in advance (last year's same "
+            "3% a year (ladders and willingness to pay in the replay follow the same drift), so the market grows, and station revenue targets are budgets set in advance (last year's same "
             "month times a growth factor, a planned curve in the first year, a launch plan for the new route).\n\n"
             "**One external source.** Exchange rates are the European Central Bank euro foreign exchange reference rates "
             "(monthly averages for GBP, USD and AUD; ECB Data Portal series EXR.M.GBP.EUR.SP00.A, EXR.M.USD.EUR.SP00.A and "

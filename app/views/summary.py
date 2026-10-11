@@ -41,6 +41,9 @@ def render(cur):
     lost_pax = ll["As flown"].sum() - ll["Continuous"].sum()
     lost_conn, lost_conn_lf = ll["Lost connecting pax"].sum(), ll["Lost connecting pax (floor)"].sum()
     lost_contrib = ll[f"Lost network contribution ({cur} k)"].sum() * 1e3
+    seg_pax = c.sim_by(cur, "segment_id").pivot(index="segment_id", columns="policy", values="revenue_eur")
+    seg_gain = (seg_pax["continuous"] / seg_pax["buckets"] - 1).sort_values(ascending=False)
+    top_names = " and ".join(c.SEGMENT_NAMES[i] for i in seg_gain.index[:2])
     st_tbl = station_table(cur)
     below = st_tbl[st_tbl["Revenue vs target %"] < 100]
     below_txt = ", ".join(f"{r.Station} ({r['Revenue vs target %']:.0f}%)" for _, r in below.iterrows()) or "none"
@@ -49,9 +52,9 @@ def render(cur):
     a, b, d = st.columns(3)
     with a:
         _team(c.ROYAL, "Pricing and Revenue Management (HO)", f"{h['gain_bk']:+.1f}% vs buckets",
-              f"Wants continuous pricing: {c.money(ct.revenue, cur)} against {c.money(bk.revenue, cur)} for the bucket rule "
-              f"on the same customers, by charging more to late and less price-sensitive Business customers. "
-              f"Against as flown it is {h['gain']:+.1f}%.")
+              f"Wants continuous pricing: {c.money(ct.revenue, cur)} against {c.money(bk.revenue, cur)} for the validated "
+              f"bucket baseline on the same customers, mostly from higher {top_names} fares. Against as flown it is "
+              f"{h['gain']:+.1f}%.")
     with b:
         _team(c.TEAL, "Network Revenue and Inventory (HO)", f"{lost_conn:,.0f} connecting pax lost",
               f"Worried about feed: {lost_pax:,.0f} fewer Leisure and VFR passengers, about {lost_conn:,.0f} connecting, "
@@ -74,16 +77,15 @@ def render(cur):
                                          else f"{r.revenue / 1e6:,.1f}" for r, p in zip(rows, order)],
                                    textposition="outside"))
             fig.update_yaxes(range=[0, max(r.revenue for r in rows) / 1e6 * 1.25])
-            c.chart(fig, f"Against buckets the route floor earns {h['gain_lf_bk']:+.1f}% and continuous pricing "
-                         f"{h['gain_bk']:+.1f}%; both are below the as-flown reference.", 310, legend=False)
+            c.chart(fig, f"Against the validated bucket baseline the route floor earns {h['gain_lf_bk']:+.1f}% and continuous "
+                         f"pricing {h['gain_bk']:+.1f}%; as flown is shown for reference.", 310, legend=False)
     with right:
         with c.panel("Load factor, four policies (%)"):
             fig = go.Figure(go.Bar(x=labels, y=[r.load_factor for r in rows], marker_color=colors,
                                    text=[f"{r.load_factor:.1f}<br>{r.pax:,.0f} pax" for r in rows], textposition="outside"))
             fig.update_yaxes(range=[0, 118])
-            c.chart(fig, f"Buckets fill {bk.load_factor:.0f}% of seats at low fares; continuous pricing falls to "
-                         f"{ct.load_factor:.0f}% and the route floor holds {lf.load_factor:.0f}% (as flown {obs.load_factor:.0f}%).",
-                    310, legend=False)
+            c.chart(fig, f"The bucket baseline holds {bk.load_factor:.0f}% (as flown {obs.load_factor:.0f}%); continuous pricing "
+                         f"{ct.load_factor:.0f}% and the route floor {lf.load_factor:.0f}%.", 310, legend=False)
 
     st.markdown(
         f'<div class="callout"><div class="callout-title">Recommendation</div>'
@@ -91,8 +93,7 @@ def render(cur):
         f'Revenue {h["gain_lf_bk"]:+.1f}% against the bucket rule ({c.money(lf.revenue, cur)} vs {c.money(bk.revenue, cur)}) '
         f'at a load factor of {lf.load_factor:.1f}%, level with as flown ({obs.load_factor:.1f}%). Without the floor about '
         f'{lost_conn:,.0f} connecting passengers are lost; {network.floor_phrase(lost_conn_lf)}. Against as flown revenue is '
-        f'{h["gain_lf"]:+.1f}%: as-flown fares in the simulated data are set customer by customer, which neither policy '
-        f'can match.</div>',
+        f'{h["gain_lf"]:+.1f}%.</div>',
         unsafe_allow_html=True)
     st.markdown('<div class="gap"></div>', unsafe_allow_html=True)
 
@@ -101,10 +102,9 @@ def render(cur):
             "**The conflict.** Pricing wants the highest revenue, Network wants to keep connecting feed, and the stations "
             "want volume against target. A route-level load factor floor makes each route keep at least its as-flown "
             "average load factor over the six held-out months; individual flights can vary.\n\n"
-            "**Why as flown is higher.** Fares in the simulated data are drawn customer by customer, so a Business traveller "
-            "and a Leisure traveller pay very different fares in the same week. Both replayed policies offer one base price per "
-            "booking period (Business fenced at the 6th price point), so as flown is an upper reference, not a policy to beat. "
-            "The like-for-like test is continuous pricing against the bucket rule.\n\n"
+            f"**The baseline.** The bucket policy is calibrated on the training period so that replaying it reproduces as-flown "
+            f"results (revenue {c.calibration()['training']['rev_gap']:+.1f}%, load factor {c.calibration()['training']['lf_gap']:+.1f} "
+            f"points). The comparison is against that validated baseline, on the same customers and rules.\n\n"
             "**Why the floor can earn more.** The unconstrained price rule re-solves one price at a time and leaves seats "
             "empty; adding a value per passenger acts like a seat value and fills seats at a better price. It uses the "
             "same price sensitivity estimates, so it is still conditional on them.")

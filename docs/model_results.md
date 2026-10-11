@@ -57,27 +57,36 @@ Elasticity of originating demand to price, estimated from the random promotions 
 
 ## 3. Fare buckets vs continuous pricing (Phase 4b)
 
-The held-out flights replayed under two pricing policies facing identical simulated customers. Revenue is for originating passengers on their outbound leg, in millions of EUR in one-way-fare terms. Both policies see the Phase 3 forecast at 90 days (not the truth) and rescale from actual sales.
+The held-out flights replayed under pricing policies facing identical simulated customers. The bucket policy is first calibrated on the training period and the comparison is made against that validated baseline. Revenue is for originating passengers on their outbound leg, in millions of EUR in one-way-fare terms. Both policies see the Phase 3 forecast at 90 days (not the truth) and rescale from actual sales.
 
 - **Buckets:** 10 fixed one-way price points opened and closed by EMSR-b, with advance-purchase rules: the two cheapest classes close 14 days out and classes 3 and 4 close 7 days out.
 - **Continuous:** a price anywhere between the lowest and highest bucket price, re-chosen each booking period to maximise expected revenue.
-- **Fence:** Business-segment customers can only buy the 6th price point or above, in both policies.
+- **Fence:** Business-segment customers can only buy the 9th price point or above, in both policies (value chosen in the calibration).
 - **Demand model:** each customer has a willingness to pay (WTP) drawn from a lognormal curve with a spread of 0.45 (an assumption), set so that the slope of demand at the as-flown price equals the estimated price sensitivity. WTP also rises towards departure, following the average price paid by booking window in the training data (about 0.82 in the earliest window to 1.25 in the last week). Because WTP is bounded, the revenue-maximising price falls inside the price range.
+
+### Calibration of the bucket baseline
+
+| Period | As flown revenue (m EUR) | Bucket replay revenue (m EUR) | Revenue gap % | As flown load factor % | Bucket replay load factor % | Gap, points |
+| --- | --- | --- | --- | --- | --- | --- |
+| training | 418.03 | 404.88 | -3.14 | 81.92 | 81.40 | -0.52 |
+| test | 82.15 | 79.70 | -2.98 | 76.86 | 77.88 | +1.02 |
+
+The bucket policy has four free settings (protection scale, flexible-class fence for each cabin, advance-purchase variant). They were searched on 1,600 training flights to match as-flown revenue and load factor, then checked on all training flights and, unchanged, on the held-out flights.
 
 ### Base scenario
 
 | Policy | Revenue (m EUR) | vs buckets | vs as flown | Passengers | Average fare (EUR) | Load factor % |
 | --- | --- | --- | --- | --- | --- | --- |
-| Observed (as flown) | 86.25 | | | 153,040 | 564 | 76.9 |
-| Simplified buckets (EMSR-b) | 70.78 | | -17.9% | 189,292 | 374 | 86.7 |
-| Continuous pricing | 81.24 | +14.8% | -5.8% | 124,757 | 651 | 69.2 |
-| Continuous with a route-level load factor floor | 82.97 | +17.2% | -3.8% | 153,075 | 542 | 76.9 |
+| Observed (as flown) | 82.15 | | | 153,040 | 537 | 76.9 |
+| Calibrated buckets (EMSR-b) | 79.70 | | -3.0% | 156,756 | 508 | 77.9 |
+| Continuous pricing | 82.92 | +4.0% | +0.9% | 142,617 | 581 | 74.0 |
+| Continuous with a route-level load factor floor | 83.13 | +4.3% | +1.2% | 153,057 | 543 | 76.9 |
 
-**Headline: on the same customers and the same rules, continuous pricing earns 14.8% more than the bucket rule, and continuous pricing with a route load factor floor 17.2% more.** The bucket rule fills 87% of seats at low fares; continuous pricing holds 69%; the route floor holds 77%, level with as flown (77%).
+**Headline: on the same customers and the same rules, continuous pricing earns 4.0% more than the validated bucket baseline, and continuous pricing with a route load factor floor 4.3% more.** The validated bucket baseline fills 78% of seats; continuous pricing holds 74%; the route floor holds 77%, level with as flown (77%).
 
-**Why both policies earn less than as flown.** Fares in the simulated data are drawn customer by customer, so a Business traveller and a Leisure traveller pay very different fares in the same week. Both replayed policies offer one base price per booking period (with the Business fence), so neither can match that. As flown is an upper reference, not a policy to beat; the like-for-like comparison is continuous pricing against buckets. Against as flown, continuous pricing is -5.8% and the route floor -3.8%.
+**Reading the numbers.** The bucket baseline reproduces as flown within about 3% on revenue and about one load factor point in both periods, so the comparison is against a validated baseline. Against as flown (for reference), continuous pricing is +0.9% and the route floor +1.2%.
 
-**Route-level load factor floor.** Each of the 12 routes must keep at least its as-flown average load factor over the six held-out months; single flights can vary. For each route the solver adds a per-passenger value to the pricing objective (a crude seat value) until the route reaches its floor (53 to 218 EUR per passenger across routes). The floor earns +2.1% more than unconstrained continuous pricing because the unconstrained price rule re-solves one price at a time and leaves seats empty. It keeps the connecting feed whole but uses the same price sensitivity estimates, so it is a better-tuned policy, not a free gain.
+**Route-level load factor floor.** Each of the 12 routes must keep at least its as-flown average load factor over the six held-out months; single flights can vary. For each route the solver adds a per-passenger value to the pricing objective (a crude seat value) until the route reaches its floor (37 to 152 EUR per passenger across routes). The floor earns +0.2% more than unconstrained continuous pricing because the unconstrained price rule re-solves one price at a time and leaves seats empty. It keeps the connecting feed whole but uses the same price sensitivity estimates, so it is a better-tuned policy, not a free gain.
 
 ### Does the price pattern look like real pricing?
 
@@ -87,51 +96,51 @@ Business cabin:
 
 | Policy | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Buckets | 940 | 980 | 1,014 | 1,022 | 1,039 | 1,263 | 1,563 |
-| Continuous | 2,291 | 2,359 | 2,485 | 2,567 | 2,687 | 2,748 | 2,857 |
-| Continuous with route floor | 2,201 | 2,272 | 2,413 | 2,500 | 2,636 | 2,704 | 2,827 |
+| Buckets | 1,059 | 1,080 | 1,094 | 1,202 | 1,319 | 1,630 | 1,833 |
+| Continuous | 1,328 | 1,377 | 1,472 | 1,511 | 1,726 | 1,839 | 2,141 |
+| Continuous with route floor | 1,295 | 1,342 | 1,434 | 1,467 | 1,662 | 1,783 | 2,062 |
 
 Economy cabin:
 
 | Policy | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Buckets | 192 | 209 | 217 | 219 | 225 | 276 | 360 |
-| Continuous | 326 | 353 | 416 | 471 | 557 | 615 | 677 |
-| Continuous with route floor | 272 | 293 | 319 | 354 | 449 | 523 | 606 |
+| Buckets | 272 | 268 | 262 | 256 | 256 | 331 | 395 |
+| Continuous | 293 | 305 | 323 | 332 | 356 | 366 | 403 |
+| Continuous with route floor | 264 | 279 | 297 | 306 | 328 | 338 | 371 |
 
-- Continuous prices rise towards departure and mostly sit inside the range: 19% of Business and 2.0% of Economy prices are at the ceiling.
+- Continuous prices rise towards departure and mostly sit inside the range: 10% of Business and 0.2% of Economy prices are at the ceiling.
 - Bucket prices stay at or near the cheapest class while departure is far away (the cabins are lightly loaded, so EMSR-b protects little), then step up when the advance-purchase rules close the cheap classes.
 - An earlier version of the replay used a constant-elasticity demand curve with no limit on willingness to pay and a flat willingness to pay over time. With a Business sensitivity of about -0.5, revenue then rose with every price increase, so Business prices sat at the ceiling 97% of the time and bucket prices at the floor 83% of the time. The bounded, time-varying model replaced it.
 
 | Segment | vs as flown % | vs buckets % | Avg fare buckets (EUR) | Avg fare continuous (EUR) | Passengers, as flown -> continuous |
 | --- | --- | --- | --- | --- | --- |
-| Business | +2.2 | +26.0 | 713 | 1027 | 49,249 -> 46,179 |
-| Leisure | -16.4 | -1.3 | 243 | 429 | 67,869 -> 50,856 |
-| VFR | -12.8 | +8.8 | 242 | 432 | 35,922 -> 27,722 |
+| Business | +2.5 | +0.2 | 1144 | 1154 | 49,249 -> 39,398 |
+| Leisure | -0.5 | +8.6 | 293 | 367 | 67,869 -> 67,245 |
+| VFR | -1.5 | +10.1 | 294 | 356 | 35,922 -> 35,974 |
 
 | Route | Buckets (m EUR) | Continuous (m EUR) | vs buckets % | vs as flown % |
 | --- | --- | --- | --- | --- |
-| Frankfurt | 19.71 | 22.37 | +13.5 | -5.3 |
-| Berlin | 5.64 | 6.52 | +15.7 | -3.9 |
-| London | 21.13 | 24.18 | +14.5 | -6.8 |
-| Paris | 10.39 | 11.94 | +14.9 | -6.3 |
-| Milan | 8.12 | 9.37 | +15.4 | -5.9 |
-| Madrid | 5.80 | 6.86 | +18.2 | -4.7 |
+| Frankfurt | 22.14 | 23.00 | +3.8 | +2.2 |
+| Berlin | 6.06 | 6.39 | +5.6 | -0.7 |
+| London | 24.19 | 24.96 | +3.2 | +0.9 |
+| Paris | 11.63 | 12.19 | +4.8 | +0.4 |
+| Milan | 9.18 | 9.55 | +4.1 | +0.8 |
+| Madrid | 6.50 | 6.83 | +5.1 | -0.2 |
 
 ### Risks
 
 | Scenario | Buckets (m EUR) | Continuous (m EUR) | vs buckets | vs as flown |
 | --- | --- | --- | --- | --- |
-| Base | 70.78 | 81.24 | +14.8% | -5.8% |
-| Forecast underestimates demand by 15% | 70.34 | 82.20 | +16.9% | -4.7% |
-| Competitor cuts price 10% (forecast unaware) | 67.17 | 77.85 | +15.9% | -9.7% |
-| Customers more price sensitive (low end of estimated range) | 76.10 | 76.54 | +0.6% | -11.3% |
-| Customers less price sensitive (high end of estimated range) | 65.40 | 87.19 | +33.3% | +1.1% |
+| Base | 79.70 | 82.92 | +4.0% | +0.9% |
+| Forecast underestimates demand by 15% | 80.47 | 83.66 | +4.0% | +1.8% |
+| Competitor cuts price 10% (forecast unaware) | 76.03 | 79.44 | +4.5% | -3.3% |
+| Customers more price sensitive (low end of estimated range) | 77.40 | 78.52 | +1.4% | -4.4% |
+| Customers less price sensitive (high end of estimated range) | 83.43 | 88.32 | +5.9% | +7.5% |
 
 - **Prices drifting down when the forecast is too low.** When the forecast underestimates demand by 15%, continuous pricing still earns about as much against buckets as in the base case, because sales feed back into the forecast after each booking period.
 - **Competitor moves.** A 10% competitor price cut costs both policies revenue; the relative advantage holds.
-- **The result depends on the price sensitivity estimate.** If customers are more price sensitive than the point estimate (still inside the estimated range), continuous pricing is level with buckets; if less sensitive, it is far ahead.
-- **The result depends on the assumed spread of willingness to pay.** At 0.35 the gain against buckets is +18.4% (-7.5% against as flown). At 0.45 the gain against buckets is +14.8% (-5.8% against as flown). At 0.60 the gain against buckets is +11.5% (-4.1% against as flown). The sign of both comparisons is the same across the range.
+- **The result depends on the price sensitivity estimate.** If customers are more price sensitive than the point estimate (still inside the estimated range), the gain over buckets shrinks to +1.4%; if less sensitive it rises to +5.9%.
+- **The result depends on the assumed spread of willingness to pay.** At 0.35 the gain against buckets is +4.7% (-1.3% against as flown). At 0.45 the gain against buckets is +4.0% (+0.9% against as flown). At 0.60 the gain against buckets is +4.0% (+3.9% against as flown). The sign of both comparisons is the same across the range.
 
 ### Limits of the replay
 

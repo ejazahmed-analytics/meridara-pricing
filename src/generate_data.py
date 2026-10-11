@@ -168,9 +168,11 @@ CHANNEL_MIX = np.array([[.30, .08, .50, .12],   # placeholder, not calibrated
 DISPLACEMENT_PROB = {"low": .25, "shoulder": .40, "summer": .60, "christmas": .65}
 DISPLACEMENT_FARE = {1: [260, 480, 300, 190], 2: [1100, 1900, 1200, 800]}
 
-# Fares drift up with the market: +7.5% a year, centred on the middle of the window, so average yields stay
-# at the agreed means. Without growth, a budget of "last year plus 5 to 8%" could never be met.
-YIELD_TREND = 0.075
+# Fares drift up with the market: +3% a year, centred on the middle of the window, so average yields stay
+# at the agreed means. The whole fare ladder (price points, floor, ceiling) moves with the trend, as if the
+# carrier re-files its fares with the market. Without growth, a budget of "last year plus 3 to 6%" could
+# never be met in a realistic share of months.
+YIELD_TREND = 0.03
 TREND_MID = pd.Timestamp("2024-09-01")
 
 # Revenue budgets (set in advance, financial year April to March). After the first year a target is the same
@@ -178,7 +180,7 @@ TREND_MID = pd.Timestamp("2024-09-01")
 # to an annual budget built from capacity, planned load factor and planned fares. Nothing here uses the
 # actual revenue of the month being targeted.
 BUDGET_FY_START = "2024-04"                       # first month that has a prior-year actual to build on
-STATION_GROWTH = {1: 0.050, 3: 0.050, 4: 0.050, 5: 0.070, 6: 0.080}
+STATION_GROWTH = {1: 0.030, 3: 0.030, 4: 0.040, 5: 0.050, 6: 0.060}
 OWN_POS_PLAN = 0.50                               # planned share of a station's route revenue sold at its own POS
 PLAN_CABIN_SHARE = np.array([0.225, 0.035, 0.018])    # planned Business-cabin share of passengers by segment
 PLAN_YIELD_FACTOR = 0.88                          # planners allow for return-leg pricing and the low season
@@ -235,6 +237,14 @@ def build_displacement_costs():
                  cost_eur_per_pax=round(prob * DISPLACEMENT_FARE[cabin][c], 1))
             for cabin in (1, 2) for c in range(4) for s, prob in DISPLACEMENT_PROB.items()]
     return pd.DataFrame(rows)
+
+
+def build_fare_trend():
+    """Trend index by month (1.00 at the middle of the window). fare_buckets are at that price level."""
+    months = pd.period_range("2023-03", "2026-02", freq="M")
+    mid = [pd.Timestamp(m.start_time) + pd.Timedelta(days=14) for m in months]
+    idx = [(1 + YIELD_TREND) ** ((d - TREND_MID).days / 365.25) for d in mid]
+    return pd.DataFrame({"month": [str(m) for m in months], "trend_index": np.round(idx, 4)})
 
 
 def build_events():
@@ -667,7 +677,7 @@ def draw_journeys(f, O, spike, ctx, fx_rate, ladder, pro, rng):
     noise = rng.lognormal(-0.5 * FARE_SIGMA ** 2, FARE_SIGMA, N)
     target = (FARE_MEAN[ci, si] * price_idx[fi] * sf_norm[fi] * lift[fi] * trend[fi]
               * timing / e_timing[si] * noise)
-    lad = ladder[route, ci, kind[fi]]
+    lad = ladder[route, ci, kind[fi]] * trend[fi][:, None]            # the ladder is re-filed with the market
     rank = snap_to_ladder(target, lad)
     intro = np.where(berlin & (dep < (BERLIN_LAUNCH + pd.Timedelta(days=90)).to_datetime64()), 0.9, 1.0)
     promo = 1 - f.promo_discount_pct.to_numpy()[fi] / 100
@@ -876,6 +886,7 @@ def main():
         "proration_factors": pro_df,
         "revenue_targets": targets,
         "displacement_costs": build_displacement_costs(),
+        "fare_trend": build_fare_trend(),
     }
     out = write_database(args.db, tables, b)
 

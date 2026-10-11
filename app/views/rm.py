@@ -110,7 +110,7 @@ def render(cur):
                 msg = "Prices offered by each policy in each booking period."
                 if {"continuous", "buckets"} <= set(p5.index):
                     msg = (f"At 30-15 days out the system offers {p5['continuous']:,.0f} {cur} (continuous) against "
-                           f"{p5['buckets']:,.0f} {cur} from the bucket rule.")
+                           f"{p5['buckets']:,.0f} {cur} from the validated bucket baseline.")
                 c.chart(fig, msg, 340)
 
     left, right = st.columns(2)

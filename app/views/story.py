@@ -59,13 +59,13 @@ def render(cur):
     # Story hero with four big numbers
     st.markdown(
         f'<div class="story-hero"><div class="story-kicker">MERIDARA &middot; DATA STORY &middot; HELD-OUT FLIGHTS, SEP 2025 TO FEB 2026</div>'
-        f'<div class="story-title">Continuous pricing beats the bucket rule, and a route load factor floor keeps the network whole</div>'
+        f'<div class="story-title">Continuous pricing beats a validated bucket baseline, and a route load factor floor keeps the network whole</div>'
         f'<div class="story-intro">A replay of {n_test:,} simulated flights under fare buckets and continuous pricing, '
         f'seen through three lenses: pricing, network and station.</div>'
         f'<div class="story-stats">'
-        f'<div><div class="story-num">{h["gain_bk"]:+.1f}%</div><div class="story-cap">Continuous vs buckets, same customers</div></div>'
-        f'<div><div class="story-num">{h["gain_lf_bk"]:+.1f}%</div><div class="story-cap">Route floor vs buckets, at the as-flown load factor</div></div>'
-        f'<div><div class="story-num">{h["gain"]:+.1f}%</div><div class="story-cap">Continuous vs as flown (an upper reference)</div></div>'
+        f'<div><div class="story-num">{h["gain_bk"]:+.1f}%</div><div class="story-cap">Continuous vs validated buckets</div></div>'
+        f'<div><div class="story-num">{h["gain_lf_bk"]:+.1f}%</div><div class="story-cap">Route floor vs validated buckets, at the as-flown load factor</div></div>'
+        f'<div><div class="story-num">{h["gain"]:+.1f}%</div><div class="story-cap">Continuous vs as flown (reference)</div></div>'
         f'<div><div class="story-num">{g90:.0f}%</div><div class="story-cap">Forecast error at 90 days (baseline {b90:.0f}%)</div></div>'
         f'</div></div>', unsafe_allow_html=True)
 
@@ -95,8 +95,8 @@ def render(cur):
                                    marker_color=[c.POLICY_COLORS[p] for p in order],
                                    text=[f"{r.revenue / 1e6:,.1f}" for r in rows], textposition="outside"))
             fig.update_yaxes(range=[0, max(r.revenue for r in rows) / 1e6 * 1.18])
-            c.chart(fig, f"Continuous pricing earns {c.vs_text(h['gain_bk'])} than buckets; as flown is the higher reference.",
-                    280, legend=False)
+            c.chart(fig, f"Against the validated bucket baseline continuous pricing earns {c.vs_text(h['gain_bk'])}; as flown is "
+                         f"shown for reference.", 280, legend=False)
 
     # 2. Three lenses
     st.markdown("#### 2. How I approached it: three lenses")
@@ -154,8 +154,9 @@ def render(cur):
                                          marker=dict(size=16, color=c.POLICY_COLORS[p]), textfont=dict(color=c.NAVY)))
             fig.update_xaxes(title="Load factor (%)", range=[65, 99])
             fig.update_yaxes(title=f"Revenue ({cur} millions)")
-            c.chart(fig, f"Buckets reach {bk.load_factor:.0f}% by selling cheap seats; the route floor earns the most of the "
-                         f"three policies at the as-flown load factor ({lf.load_factor:.0f}%).", 300, legend=False)
+            best_pol = max(("buckets", "continuous", "continuous_lf"), key=lambda p: c.policy_row(s, "base", p).revenue)
+            c.chart(fig, f"{c.POLICY_LABELS[best_pol]} earns the most of the three replayed policies; the route floor holds "
+                         f"{lf.load_factor:.0f}% load factor (as flown {obs.load_factor:.0f}%).", 300, legend=False)
 
     left, right = st.columns(2)
     with left:
@@ -206,9 +207,8 @@ def render(cur):
     st.markdown("#### 5. How I read it as an analyst")
     st.markdown('<div class="draft">DRAFT - for the author to rewrite in their own words</div>', unsafe_allow_html=True)
     st.markdown(
-        f"On the same customers continuous pricing beats the bucket rule, but unconstrained it does so by selling fewer "
-        f"seats at higher prices, and it still earns {c.vs_text(h['gain'])} than as flown, which sets fares customer by "
-        f"customer. Business customers are barely price sensitive, so higher prices cost little volume there, while Leisure "
+        f"On the same customers continuous pricing beats the validated bucket baseline, but unconstrained it does so by "
+        f"selling fewer seats at higher prices. Business customers are barely price sensitive, so higher prices cost little volume there, while Leisure "
         f"and VFR customers are price sensitive and walk away, and that is where the connecting passengers sit: about "
         f"{lost_conn:,.0f} are priced out. The forecast is good enough to price from on established routes and not yet on "
         f"Berlin. The result also leans on a price sensitivity estimate with a wide range, so I would not roll it out "
@@ -248,8 +248,10 @@ def render(cur):
             "displacement cost, and assumes a fence below which Business customers cannot buy.\n"
             "- The headline depends on a price sensitivity estimate with a wide range, and on an assumed spread of willingness "
             f"to pay (0.45; {c.spread_text()}).\n"
-            "- As flown is an upper reference: fares in the simulated data are set customer by customer, which neither replayed "
-            "policy can match. The like-for-like comparison is continuous pricing against the bucket rule.\n"
+            f"- The bucket baseline is calibrated on the training period (revenue {c.calibration()['training']['rev_gap']:+.1f}%, load "
+            f"factor {c.calibration()['training']['lf_gap']:+.1f} points against as flown), then used unchanged in the test period.\n"
+            "- The replay knows the demand curve the simulated customers follow, ignores competitor reactions and network "
+            "effects beyond the stress tests, and covers six winter months, so the gain is an upper bound for a pilot.\n"
             "- The route floor earns more than unconstrained continuous pricing because the unconstrained price rule leaves "
             "seats empty; it should be read as a better-tuned policy, not a free gain.\n\n"
             "**Next steps (Version 2):** a stronger directional imbalance in the data, unconstraining demand on full flights, "

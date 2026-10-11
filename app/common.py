@@ -30,9 +30,9 @@ SHORT_DISCLAIMER = "Fictional airline, simulated data. For illustration only."
 NAVY, ROYAL, TEAL, CORAL, AMBER = "#0B1F3A", "#1F4FD8", "#0E8F8F", "#F0644D", "#E5A800"
 SLATE, BG, LINE = "#4A5D7A", "#EEF3FA", "#D5DEEC"
 
-POLICY_LABELS = {"observed": "As flown", "buckets": "Simplified buckets (EMSR-b)",
+POLICY_LABELS = {"observed": "As flown", "buckets": "Calibrated fare buckets (EMSR-b)",
                  "continuous": "Continuous pricing", "continuous_lf": "Continuous with route load factor floor"}
-POLICY_SHORT = {"observed": "As flown", "buckets": "Buckets", "continuous": "Continuous",
+POLICY_SHORT = {"observed": "As flown (reference)", "buckets": "Buckets (validated)", "continuous": "Continuous",
                 "continuous_lf": "Continuous + floor"}
 POLICY_COLORS = {"observed": SLATE, "buckets": CORAL, "continuous": ROYAL, "continuous_lf": TEAL}
 SEGMENT_NAMES = {1: "Business", 2: "Leisure", 3: "VFR"}
@@ -114,6 +114,18 @@ def sim_by(cur, by):
 
 def policy_row(summary, scenario, policy):
     return summary[(summary.scenario == scenario) & (summary.policy == policy)].iloc[0]
+
+
+@st.cache_data(show_spinner=False)
+def calibration():
+    """How closely the calibrated bucket replay reproduces as-flown revenue and load factor, by period."""
+    t = query("results", "SELECT * FROM simulation_calibration_check")
+    out = {}
+    for period in ("training", "test"):
+        a = t[(t.period == period) & (t.policy == "as flown")].iloc[0]
+        b = t[(t.period == period) & (t.policy == "bucket replay")].iloc[0]
+        out[period] = dict(rev_gap=100 * (b.revenue_eur / a.revenue_eur - 1), lf_gap=b.load_factor - a.load_factor)
+    return out
 
 
 def headline(cur):
