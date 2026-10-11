@@ -14,7 +14,7 @@ This README is a placeholder. The full version is written in Phase 6.
 | 2 | Data | Done |
 | 3 | Forecast | Done |
 | 4 | Sensitivity and simulation | Done |
-| 5 | App | Built, in review |
+| 5 | App | Built, in review (redesign) |
 | 6 | Publish | Not started |
 
 ## Data plan

@@ -69,14 +69,14 @@ The held-out flights replayed under two policies facing identical simulated cust
 | --- | --- | --- | --- | --- | --- |
 | Observed (as flown) | 79.19 | | 153,040 | 517 | 76.9 |
 | Continuous pricing | 84.70 | +7.0% | 131,280 | 645 | 70.9 |
-| Continuous with a load factor floor | 81.67 | +3.1% | 172,604 | 473 | 82.2 |
+| Continuous with a route-level load factor floor | 85.72 | +8.2% | 159,067 | 539 | 78.5 |
 | Simplified buckets (EMSR-b) | 76.79 | -3.0% | 213,783 | 359 | 93.4 |
 
 **Headline: continuous pricing earns 7.0% more than as flown**, with a higher average fare and a lower load factor (70.9% against 76.9%). It gives up volume for yield, mostly on Leisure and VFR passengers, while Business revenue rises. Against the simplified bucket policy the gain is 10.3%.
 
 **Why the simplified bucket policy earns less than as flown.** The replay offers one price per booking period to every customer (Business customers are fenced at the 6th price point), so cheap classes dilute yield and the plane fills at a low fare. The as-flown fares also discriminate by segment and booking time, which a single-price replay does not.
 
-**Load factor floor.** Requiring each flight to still reach its as-flown number of originating passengers keeps 45% of the revenue gain (+3.1% against as flown, 81.7m EUR) at a load factor of 82.2%, above the as-flown 76.9%. It leaves the connecting feed whole: Leisure and VFR originating passengers are above as flown instead of about 13,200 below.
+**Route-level load factor floor.** Each of the 12 routes must keep at least its as-flown average load factor over the six held-out months; single flights can vary. For each route the solver adds a per-passenger value to the pricing objective (a crude seat value) until the route reaches its floor. Result: revenue +8.2% against as flown at a load factor of 78.5% (as flown 76.9%). Four routes (Berlin and Madrid, both directions) were already above their floor without any adjustment. The floor earns more than unconstrained continuous pricing (+1.2%) because the unconstrained price rule re-solves one price at a time and leaves seats empty; the seat value fills them at a better price. Read it as a better-tuned policy that keeps the connecting feed whole, not as a free gain: it uses the same price sensitivity estimates.
 
 | Segment | Revenue change % | Avg fare buckets (EUR) | Avg fare continuous (EUR) |
 | --- | --- | --- | --- |

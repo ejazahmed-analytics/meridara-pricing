@@ -238,5 +238,5 @@ Bookings are generated as journeys. Each journey has a `journey_id`, a `trip_typ
 - Continuous pricing: price re-chosen each period to maximise price x min(expected remaining demand, remaining seats), within the lowest and highest price point of the route ladder.
 - Scenarios: base; forecast 15% too low; competitor index down 10% (using the estimated competitor effect); world elasticity at the low and high end of the estimated 95% range.
 - Model outputs live in `data/results.db`, separate from `data/meridara.db`.
-- Load factor floor (base scenario only): the continuous policy picks the highest-revenue price that still reaches the flight's as-flown number of originating passengers, given the forecast and the sales so far.
+- Load factor floor (base scenario only): each route must keep at least its as-flown average load factor over the held-out window (single flights can vary). The solver adds a per-passenger value to the continuous pricing objective until the route reaches its floor; the value never enters the counted revenue.
 - App: results are shown in the selected display currency, converted at the monthly average rate of each flight's departure month. Page text and takeaways are generated from the databases, so they update with the data.

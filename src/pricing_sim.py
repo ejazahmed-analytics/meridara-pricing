@@ -6,8 +6,8 @@ Policies, both facing the same simulated customers on every flight:
   * buckets    about 10 fixed one-way price points opened and closed by EMSR-b
   * continuous a price anywhere between the lowest and highest bucket price,
                re-chosen each booking period to maximise expected revenue
-  * continuous_lf (base scenario only) the same, but each flight must still reach
-               its as-flown number of originating passengers (a load factor floor)
+  * continuous_lf (base scenario only) the same, but each route must keep at least its
+               as-flown average load factor over the test window; single flights can vary
 
 Demand for each flight, cabin and segment is sized from observed originating
 passengers, with a constant-elasticity demand curve using the segment price
@@ -147,11 +147,13 @@ def emsr_b_price(prices, mu, c_rem):
     return prices[open_idx]
 
 
-def run_policy(policy, ladder, cust, N_hat, p_ref, belief, share, cap, floor, ceiling, target=0):
+def run_policy(policy, ladder, cust, N_hat, p_ref, belief, share, cap, floor, ceiling, bonus=0.0):
     """Play one flight and cabin under one policy. Returns pax and revenue by segment and prices by period.
 
     Both policies offer one base price per period. Business-segment customers pay at least the fence
-    price (the 6th price point), so they cannot buy down to the cheapest classes.
+    price (the 6th price point), so they cannot buy down to the cheapest classes. For the load factor
+    floor policy, `bonus` is a value per passenger added to the objective: it pushes prices down until
+    the route reaches its target load factor. It never enters the revenue that is counted.
     """
     c_rem = cap
     period, seg, wtp = cust
@@ -179,14 +181,7 @@ def run_policy(policy, ladder, cust, N_hat, p_ref, belief, share, cap, floor, ce
             seg_d = dem_grid * w[None, :]                                  # expected buyers by segment
             total = seg_d.sum(1)
             scale = np.minimum(1.0, c_rem / np.maximum(total, 1e-9))
-            revenue = scale * (seg_d * eff_grid).sum(1)
-            if policy == "continuous_lf":
-                # Highest-revenue price that still reaches the as-flown passenger count.
-                needed = max(target - pax.sum(), 0.0)
-                enough = scale * total >= needed
-                price = grid[np.argmax(np.where(enough, revenue, -1.0))] if enough.any() else grid[0]
-            else:
-                price = grid[np.argmax(revenue)]
+            price = grid[np.argmax(scale * (seg_d * (eff_grid + bonus)).sum(1))]
         else:
             d = dem_class @ w
             mu = np.maximum(d - np.append(d[1:], 0.0), 1e-9)               # demand in each fare band
@@ -203,6 +198,51 @@ def run_policy(policy, ladder, cust, N_hat, p_ref, belief, share, cap, floor, ce
     return pax, rev, prices
 
 
+def route_level_floor(tasks, share, seats_by_flight, route_of_flight):
+    """Continuous pricing with a route-level load factor floor.
+
+    For every route, find the smallest per-passenger bonus that brings the route's average load factor
+    over the test window up to its as-flown level (bisection), then keep that run.
+    """
+    by_route = {}
+    for tk in tasks:
+        by_route.setdefault(tk["route"], []).append(tk)
+    results, prices, table = [], [], []
+    for route, tks in sorted(by_route.items()):
+        flights = [f for f, r in route_of_flight.items() if r == route and f in seats_by_flight.index]
+        seats = seats_by_flight.loc[flights].capacity.sum()
+        inbound = seats_by_flight.loc[flights].inbound_pax.sum()
+        target = (sum(tk["N"].sum() for tk in tks) + inbound) / seats
+
+        def play(bonus):
+            out = [run_policy("continuous_lf", tk["ladder"], tk["cust"], tk["N_hat"], tk["p_ref"], tk["belief"],
+                              share, tk["cap"], tk["ladder"][0], tk["ladder"][-1], bonus=bonus) for tk in tks]
+            return (sum(o[0].sum() for o in out) + inbound) / seats, out
+
+        lf, out = play(0.0)
+        bonus = 0.0
+        if lf < target:
+            lo, hi = 0.0, 2 * max(tk["ladder"][-1] for tk in tks)
+            lf_hi, out_hi = play(hi)
+            if lf_hi >= target:
+                for _ in range(14):
+                    mid = (lo + hi) / 2
+                    lf_m, out_m = play(mid)
+                    if lf_m >= target:
+                        hi, lf_hi, out_hi = mid, lf_m, out_m
+                    else:
+                        lo = mid
+            bonus, lf, out = hi, lf_hi, out_hi
+        table.append((int(route), float(target), float(lf), float(bonus)))
+        for tk, (pax, rev, pr) in zip(tks, out):
+            for s in range(3):
+                results.append(("base", "continuous_lf", int(tk["fid"]), tk["cabin"], s + 1, int(pax[s]), float(rev[s])))
+            prices += [("continuous_lf", int(tk["fid"]), tk["cabin"], k + 1, float(pr[k]))
+                       for k in np.flatnonzero(~np.isnan(pr))]
+        print(f"route {route}: floor {100 * target:.1f}% load factor, reached {100 * lf:.1f}% (bonus {bonus:.0f})")
+    return results, prices, table
+
+
 def main():
     fl, test, fb, cells, inbound, share, sens = load_inputs()
     lad = ladder_prices(fb)
@@ -212,12 +252,12 @@ def main():
     print(f"{test.flight_id.nunique():,} held-out flights, {len(cells):,} demand cells, "
           f"{int(cells.N.sum()):,} originating passengers\n")
 
-    results, flights_tab, paths, price_rows = [], [], [], []
+    results, flights_tab, paths, price_rows, tasks = [], [], [], [], []
     by_flight = {k: g for k, g in cells.groupby(["flight_id", "cabin_id"])}
     for si, scen in enumerate(SCENARIOS):
         belief, world, scale, bias = scenario_world(sens, scen)
-        price_sum = {p: np.zeros(PERIODS) for p in ("buckets", "continuous", "continuous_lf")}
-        price_n = {p: np.zeros(PERIODS) for p in ("buckets", "continuous", "continuous_lf")}
+        price_sum = {p: np.zeros(PERIODS) for p in ("buckets", "continuous")}
+        price_n = {p: np.zeros(PERIODS) for p in ("buckets", "continuous")}
         for (fid, cabin), g in by_flight.items():
             cap_total = caps.loc[fid, "capacity_business" if cabin == 2 else "capacity_economy"]
             inb = int(ib.get((fid, cabin), 0))
@@ -233,10 +273,12 @@ def main():
             rng = np.random.default_rng([SEED, int(fid), cabin, si])
             cust = make_customers(N, p_ref, world, scale, share, rng)
             ladder = lad[(meta.loc[fid, "route_id"], cabin, meta.loc[fid, "ladder"])]
-            for policy in (("buckets", "continuous", "continuous_lf") if scen == "base"
-                           else ("buckets", "continuous")):
+            if si == 0:
+                tasks.append(dict(route=int(meta.loc[fid, "route_id"]), fid=fid, cabin=cabin, cust=cust, N=N.copy(),
+                                  N_hat=N_hat, p_ref=p_ref, ladder=ladder, cap=cap, belief=belief))
+            for policy in ("buckets", "continuous"):
                 pax, rev, prices = run_policy(policy, ladder, cust, N_hat, p_ref, belief, share, cap,
-                                              ladder[0], ladder[-1], target=min(N.sum(), cap))
+                                              ladder[0], ladder[-1])
                 for s in range(3):
                     results.append((scen, policy, fid, cabin, s + 1, int(pax[s]), float(rev[s])))
                 ok = ~np.isnan(prices)
@@ -248,26 +290,37 @@ def main():
                 for s in range(3):
                     results.append(("base", "observed", fid, cabin, s + 1, int(N[s]), float(N[s] * p_ref[s])))
         for policy in price_sum:
-            if price_n[policy].sum() == 0:
-                continue
             for t in range(PERIODS):
                 paths.append((scen, policy, t + 1, price_sum[policy][t] / max(price_n[policy][t], 1)))
         print(f"scenario {scen} done")
 
+    # Route-level load factor floor (base scenario only).
+    ft = pd.DataFrame(flights_tab, columns=["flight_id", "cabin_id", "capacity", "inbound_pax"])
+    seats_by_flight = ft.groupby("flight_id")[["capacity", "inbound_pax"]].sum()
+    route_of_flight = test.set_index("flight_id").route_id.to_dict()
+    floor_res, floor_prices, floor_table = route_level_floor(tasks, share, seats_by_flight, route_of_flight)
+    results += floor_res
+    price_rows += floor_prices
+    fp = {}
+    for pol, fid, cab, per, price in floor_prices:
+        fp.setdefault(per, []).append(price)
+    paths += [("base", "continuous_lf", per, float(np.mean(v))) for per, v in sorted(fp.items())]
+
     res = pd.DataFrame(results, columns=["scenario", "policy", "flight_id", "cabin_id", "segment_id",
                                          "pax", "revenue_eur"])
-    rc = open_results(["simulation_results", "simulation_flights", "simulation_price_paths", "simulation_prices"])
+    rc = open_results(["simulation_results", "simulation_flights", "simulation_price_paths", "simulation_prices",
+                       "simulation_floor"])
     res.round(2).to_sql("simulation_results", rc, if_exists="append", index=False)
-    pd.DataFrame(flights_tab, columns=["flight_id", "cabin_id", "capacity", "inbound_pax"]).to_sql(
-        "simulation_flights", rc, if_exists="append", index=False)
+    ft.to_sql("simulation_flights", rc, if_exists="append", index=False)
     pd.DataFrame(paths, columns=["scenario", "policy", "period", "avg_price_eur"]).round(2).to_sql(
         "simulation_price_paths", rc, if_exists="append", index=False)
     pd.DataFrame(price_rows, columns=["policy", "flight_id", "cabin_id", "period", "price_eur"]).round(2).to_sql(
         "simulation_prices", rc, if_exists="append", index=False)
+    pd.DataFrame(floor_table, columns=["route_id", "target_load_factor", "achieved_load_factor", "bonus_eur"]).round(4).to_sql(
+        "simulation_floor", rc, if_exists="append", index=False)
     rc.commit()
     rc.close()
-    report(res, test, pd.DataFrame(flights_tab, columns=["flight_id", "cabin_id", "capacity", "inbound_pax"]),
-           pd.DataFrame(paths, columns=["scenario", "policy", "period", "avg_price"]))
+    report(res, test, ft, pd.DataFrame(paths, columns=["scenario", "policy", "period", "avg_price"]))
 
 
 def load_factor(r, ft):

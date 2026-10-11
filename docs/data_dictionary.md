@@ -91,6 +91,7 @@ Tables in `results.db`:
 | simulation_results | pricing_sim.py | Pricing replay: passengers and revenue per policy, scenario, flight, cabin and segment. |
 | simulation_flights | pricing_sim.py | Seats and returning passengers already booked, per flight and cabin. |
 | simulation_prices | pricing_sim.py | Price offered per policy, flight, cabin and booking period (base scenario). |
+| simulation_floor | pricing_sim.py | Route-level load factor floor: target, load factor reached and the per-passenger value the solver needed, per route. |
 | simulation_price_paths | pricing_sim.py | Average price offered by booking period, policy and scenario. |
 | agg_pos_month, agg_route_month, agg_flights_month, agg_contribution, agg_trip_pricing, agg_origin_test, agg_launch_week, flight_pace | build_app_data.py | Small summaries of the bookings table for the app, in EUR at the departure-month rate. |
 

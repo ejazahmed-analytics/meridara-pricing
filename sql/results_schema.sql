@@ -81,3 +81,12 @@ CREATE TABLE IF NOT EXISTS simulation_prices (
     price_eur  REAL NOT NULL,
     PRIMARY KEY (policy, flight_id, cabin_id, period)
 );
+
+-- Route-level load factor floor: each route's target (its as-flown average over the test window),
+-- the load factor reached, and the per-passenger volume bonus the solver needed.
+CREATE TABLE IF NOT EXISTS simulation_floor (
+    route_id             INTEGER PRIMARY KEY,
+    target_load_factor   REAL NOT NULL,
+    achieved_load_factor REAL NOT NULL,
+    bonus_eur            REAL NOT NULL
+);
