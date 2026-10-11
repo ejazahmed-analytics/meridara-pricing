@@ -247,7 +247,7 @@ def render(cur):
             "- The replay prices originating passengers on their outbound leg only, ignores network effects beyond a simple "
             "displacement cost, and assumes a fence below which Business customers cannot buy.\n"
             "- The headline depends on a price sensitivity estimate with a wide range, and on an assumed spread of willingness "
-            "to pay (0.45; between 0.35 and 0.60 the gain against buckets stays between about +9% and +14%).\n"
+            f"to pay (0.45; {c.spread_text()}).\n"
             "- As flown is an upper reference: fares in the simulated data are set customer by customer, which neither replayed "
             "policy can match. The like-for-like comparison is continuous pricing against the bucket rule.\n"
             "- The route floor earns more than unconstrained continuous pricing because the unconstrained price rule leaves "

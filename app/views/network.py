@@ -94,11 +94,11 @@ def render(cur):
             flows = ac.groupby("beyond_city_id").pax.sum()
             fig = go.Figure(go.Pie(labels=[c.CITY_NAMES[i] for i in flows.index], values=flows.values, hole=0.55,
                                    marker=dict(colors=[c.NAVY, c.ROYAL, c.TEAL, c.CORAL, c.AMBER]),
-                                   textinfo="label+percent", sort=False, textposition="outside",
+                                   textinfo="percent", sort=False, textposition="outside",
                                    textfont=dict(color=c.NAVY, size=12)))
             top = flows[flows.index > 0].idxmax()
             c.chart(fig, f"Local travel is {100 * flows[0] / flows.sum():.0f}% of passengers; {c.CITY_NAMES[top]} is the "
-                         f"biggest connecting flow.", 300, legend=False)
+                         f"biggest connecting flow.", 300, legend=True)
 
     left, right = st.columns(2)
     with left:

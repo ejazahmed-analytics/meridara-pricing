@@ -127,6 +127,15 @@ def headline(cur):
                 pax_ct=100 * (ct.pax / obs.pax - 1), pax_lf=100 * (lf.pax / obs.pax - 1))
 
 
+@st.cache_data(show_spinner=False)
+def spread_text():
+    """Plain wording for how the gain against buckets moves with the assumed spread of willingness to pay."""
+    t = query("results", "SELECT * FROM simulation_spread_check ORDER BY spread")
+    lo, hi = t.spread.min(), t.spread.max()
+    a, b = t.continuous_vs_buckets_pct.min(), t.continuous_vs_buckets_pct.max()
+    return (f"between {lo:.2f} and {hi:.2f} the gain against buckets stays between about {a:+.0f}% and {b:+.0f}%")
+
+
 def vs_text(x):
     """'4.7% more' or '4.7% less' for a percentage difference."""
     return f"{abs(x):.1f}% {'more' if x >= 0 else 'less'}"
@@ -206,12 +215,19 @@ def takeaway(text):
 
 def style(fig, height=300, legend=True):
     """Apply the common chart style. The legend sits above the plot so it never meets the axis title."""
+    is_pie = bool(fig.data) and fig.data[0].type == "pie"
     fig.update_layout(
         height=height, margin=dict(l=10, r=10, t=40 if legend else 14, b=10), paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=NAVY),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0, font=dict(size=11, color=NAVY)) if legend else dict(),
         showlegend=legend, hoverlabel=dict(font_size=12, font_color="white", bgcolor=NAVY),
         colorway=[ROYAL, TEAL, CORAL, AMBER, SLATE])
+    if is_pie:
+        # Leave room inside the figure: the donut sits in the upper part, short labels outside it, legend underneath.
+        fig.update_traces(domain=dict(x=[0.12, 0.88], y=[0.24, 0.90]))
+        fig.update_layout(height=height + 70, margin=dict(l=20, r=20, t=20, b=10), showlegend=True,
+                          legend=dict(orientation="h", yanchor="bottom", y=0, x=0.5, xanchor="center",
+                                      font=dict(size=12, color=NAVY)))
     fig.update_xaxes(showgrid=False, linecolor=LINE, tickfont=dict(color=NAVY), title_font=dict(color=NAVY),
                      automargin=True)
     fig.update_yaxes(gridcolor="#E3EAF5", zeroline=False, tickfont=dict(color=NAVY), title_font=dict(color=NAVY),
@@ -243,9 +259,11 @@ header[data-testid="stHeader"] * {{ color: #FFFFFF !important; fill: #FFFFFF !im
 .stApp p, .stApp li, .stApp label, .stApp span, .stApp div[data-testid="stMarkdownContainer"],
 [data-testid="stCaptionContainer"], [data-testid="stWidgetLabel"] p {{ color: {NAVY}; opacity: 1; }}
 h1, h2, h3, h4 {{ color: {NAVY} !important; }}
+html, body, [data-testid="stMain"], section.main {{ scroll-padding-top: 4rem; }}
+.panel-title, [data-testid="stVerticalBlockBorderWrapper"], .kpi, h1, h2, h3, h4 {{ scroll-margin-top: 4rem; }}
 
 /* Navy hero band, full width, with pills on the right */
-.hero {{ background: {NAVY}; margin: 0 -2rem 0.9rem -2rem; padding: 3.1rem 2rem 1.2rem 2rem;
+.hero {{ background: {NAVY}; margin: 0 -2rem 0.9rem -2rem; padding: 3.5rem 2rem 1.2rem 2rem;
          box-shadow: 0 0 0 100vmax {NAVY}; clip-path: inset(0 -100vmax);
          display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: flex-end; justify-content: space-between; }}
 .hero-brand {{ color: #FFFFFF !important; font-weight: 800; letter-spacing: 0.14em; font-size: 0.85rem;
@@ -343,7 +361,7 @@ div[data-baseweb="select"] span, div[data-baseweb="select"] div {{ color: {NAVY}
 
 @media (max-width: 640px) {{
   [data-testid="stMainBlockContainer"] {{ padding: 0 1rem 2rem 1rem !important; }}
-  .hero {{ margin: 0 -1rem 0.9rem -1rem; padding: 3.1rem 1rem 1rem 1rem; }}
+  .hero {{ margin: 0 -1rem 0.9rem -1rem; padding: 3.5rem 1rem 1rem 1rem; }}
   .hero-title {{ font-size: 1.45rem; }} .kpi-value {{ font-size: 1.7rem; }}
 }}
 </style>

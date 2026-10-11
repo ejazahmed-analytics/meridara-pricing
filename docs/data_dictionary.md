@@ -32,7 +32,7 @@ Database: `data/meridara.db` (SQLite). Model outputs are in `data/results.db` (s
 | fx_rates | Month and currency | month; currency (EUR, GBP, USD, AUD, AED); rate_to_eur (EUR per unit); source. |
 | proration_factors | Route, beyond-hub city and cabin | factor = share of a connecting through fare attributed to the European leg. |
 | displacement_costs | Beyond-hub city, season, cabin | cost_eur_per_pax = chance the seat sells to someone else x average local fare on that leg. Assumption approved by the owner. |
-| revenue_targets | European station and month | target_revenue_eur: synthetic target for revenue sold at that station's point of sale. |
+| revenue_targets | European station and month | target_revenue_eur: synthetic budget for revenue sold at that station's point of sale, set in advance (same month last year times a growth factor, a planned curve in the first year, a launch plan for Berlin). |
 
 ## Bookings (one row per flight leg of a booking)
 

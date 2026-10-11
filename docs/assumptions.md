@@ -186,9 +186,12 @@ Bookings are generated as journeys. Each journey has a `journey_id`, a `trip_typ
 | VFR | 80% | 18% | 2% |
 
 - Origin and destination: a local journey runs between a European station and the HUB. A connecting journey runs between a European station and a beyond-hub city, via the HUB. The third station is drawn from Frankfurt, London, Paris, Milan, Madrid and the four beyond-hub cities, excluding the origin and destination. Berlin and the HUB are not third stations (Berlin had no sales office before launch).
-- Revenue targets are by point of sale: station revenue is revenue sold at that station's POS (all routes, both legs), counted in the month each leg departs and converted at that month's rate. Targets are synthetic: each month's target is simulated revenue times a fixed station bias (Frankfurt 0.96, Berlin 1.12, London 1.03, Paris 0.99, Milan 1.06, Madrid 0.94) and 5% noise. A bias below 1 means the station beats target. Berlin has targets from October 2025.
+- Revenue targets are by point of sale: station revenue is revenue sold at that station's POS (all routes, both legs), counted in the month each leg departs and converted at that month's rate.
+- Targets are budgets set in advance for each financial year (April to March). After the first year, the target is the same month last year times a station growth factor: Frankfurt +5.0%, London +5.0%, Paris +5.0%, Milan +7.0%, Madrid +8.0%. In the first year (March 2023 to March 2024) it is a planned seasonal curve (the agreed monthly index) scaled to an annual budget built from capacity, planned load factor, planned fares and a planned 50% share sold at the station's own POS. Berlin is judged against a launch plan built from its scheduled flights, a load factor ramp (50%, 58%, 66%, 70%, 72%) and introductory fares. No target uses information from its own month, so misses arise around moving holidays (Easter, Eid, Diwali), promotions and competitor moves. Stations beat target in about 40% to 53% of months.
 - The Station view splits revenue sold at a station into origin-sold (the journey started there) and foreign-origin-sold (the journey started elsewhere and was sold there).
 - Sales channels (Airline direct, NDC, GDS, OTA) are assigned with a placeholder mix by segment. They are stored for a later project and are not analysed in Project 1.
+
+- Market growth: fares drift up 7.5% a year (centred on September 2024, so average yields stay at the agreed means). Without growth, a budget of last year plus 5% to 8% could not be met in a realistic share of months. The trend lifts the target fare before it snaps to the fixed fare ladder.
 
 ## 10. Price sensitivity and promotions
 

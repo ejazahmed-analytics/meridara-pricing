@@ -11,6 +11,7 @@ def render(cur):
     with c.panel("Filters"):
         stn = st.selectbox("Station", list(names), help="Frankfurt is the mature market, Berlin the new route.")
     sid = names[stn]
+    plan = "launch plan" if sid == 2 else "target"
 
     pos = c.convert(c.query("results", "SELECT * FROM agg_pos_month"), ["rev_eur"], cur)
     pos = pos[pos.pos_station_id == sid]
@@ -25,28 +26,30 @@ def render(cur):
     ow_all = 100 * tm["OW"].sum() / tm.values.sum()
 
     c.kpi_row([
-        ("Revenue vs target", f"{att:.0f}%", f"{c.money(rev.actual.sum(), cur)} vs {c.money(rev.target_revenue_eur.sum(), cur)}",
+        (f"Revenue vs {plan}", f"{att:.0f}%", f"{c.money(rev.actual.sum(), cur)} vs {c.money(rev.target_revenue_eur.sum(), cur)}",
          c.ROYAL, f"{att - 100:+.0f}%", att >= 100),
-        ("Months beating target", f"{beat} of {len(rev)}", "monthly revenue sold here", c.TEAL),
+        (f"Months beating {plan}", f"{beat} of {len(rev)}", "monthly revenue sold here", c.TEAL),
         ("Origin-sold revenue", f"{origin_share:.0f}%", "journey started at this station", c.CORAL),
         ("One-way passengers", f"{ow_all:.0f}%", "of passengers sold here", c.AMBER),
     ])
 
     left, right = st.columns(2)
     with left:
-        with c.panel(f"Revenue sold vs target ({cur} millions per month)"):
+        with c.panel(f"Revenue sold vs {plan} ({cur} millions per month)"):
             fig = go.Figure()
             fig.add_bar(x=rev.month, y=rev.actual / 1e6, name="Revenue sold", marker_color=c.ROYAL)
-            fig.add_trace(go.Scatter(x=rev.month, y=rev.target_revenue_eur / 1e6, mode="lines", name="Target",
+            fig.add_trace(go.Scatter(x=rev.month, y=rev.target_revenue_eur / 1e6, mode="lines", name=plan.capitalize(),
                                      line=dict(color=c.AMBER, width=3)))
-            c.chart(fig, f"{stn} is at {att:.0f}% of target and beat it in {beat} of {len(rev)} months.", 320)
+            worst = (rev.actual / rev.target_revenue_eur).idxmin()
+            c.chart(fig, f"{stn} is at {att:.0f}% of {plan} and beat it in {beat} of {len(rev)} months; the biggest miss "
+                         f"was {rev.month[worst]} ({100 * (rev.actual[worst] / rev.target_revenue_eur[worst] - 1):+.0f}%).", 320)
     with right:
         with c.panel("Origin-sold vs foreign-origin-sold revenue"):
             tot = {"Origin-sold": sp[1].sum(), "Foreign-origin-sold": sp[0].sum() if 0 in sp else 0}
             fig = go.Figure(go.Pie(labels=list(tot), values=list(tot.values()), hole=0.6,
-                                   marker=dict(colors=[c.ROYAL, c.CORAL]), textinfo="label+percent",
+                                   marker=dict(colors=[c.ROYAL, c.CORAL]), textinfo="percent",
                                    textposition="outside", textfont=dict(color=c.NAVY, size=12)))
-            c.chart(fig, f"{100 - origin_share:.0f}% of revenue sold here is for journeys that start elsewhere.", 320, legend=False)
+            c.chart(fig, f"{100 - origin_share:.0f}% of revenue sold here is for journeys that start elsewhere.", 320, legend=True)
 
     left, right = st.columns(2)
     with left:
@@ -116,7 +119,11 @@ def render(cur):
 
     c.notes(
         "**Revenue sold** is revenue sold at this station's point of sale, on all routes, counted in the month each leg departs. "
-        "Targets are synthetic.\n\n"
+        "**Targets** are synthetic budgets set in advance for each financial year (April to March): the same month last year "
+        "times a station growth factor (+5% to +8%). The first year uses a planned seasonal curve scaled to an annual budget built "
+        "from capacity, planned load factor and planned fares. Berlin is judged against a launch plan (scheduled flights, a load "
+        "factor ramp and introductory fares). No target uses the actual revenue of its own month, so misses appear around moving "
+        "holidays, promotions and competitor moves.\n\n"
         "**Origin-sold vs foreign-origin-sold.** Origin-sold means the journey started at this station; foreign-origin-sold means "
         "it started elsewhere and was sold here (destination or third market).\n\n"
         "**Price position.** The competing hub's weekly price index on this station's routes: 100 means the same price as "

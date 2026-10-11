@@ -45,6 +45,7 @@ The generated data and results are already in `data/`, so `streamlit run app/app
 - **Constrained demand.** Bookings cannot exceed seats. Demand that was turned away on full flights is not recorded, as in real booking data, so booked volumes understate true demand on full flights.
 - **Departure-month FX.** Fares are stored in the sales currency and converted to other currencies at the European Central Bank monthly average rate for the month each flight leg departs. AED is derived from the USD peg (3.6725 AED per USD).
 - **Station revenue is point-of-sale revenue.** About half of total leg revenue is sold at the HUB (31%) or beyond-hub cities (18%), because journeys that start there are mostly sold there. A Station view therefore shows only the share of its routes' revenue sold at its own point of sale.
+- **Targets and growth.** Station revenue targets are synthetic budgets set in advance (same month last year times a growth factor, a planned curve in the first year, a launch plan for Berlin). To make that realistic the simulated market grows: fares drift up 7.5% a year.
 - **Journeys.** Bookings are journeys with one or two flight legs. A one-way fare is always 60% of the return fare, a stated simplification.
 
 More limitations are added in Phase 6.

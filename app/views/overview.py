@@ -91,7 +91,6 @@ def render(cur):
         f"**Route floor.** Each route must keep at least its as-flown average load factor over the six held-out months; "
         f"individual flights can vary. {c.floor_vs_continuous(h)}\n\n"
         f"**Demand model.** Willingness to pay is bounded and rises towards departure, so prices fall inside the price range "
-        f"and rise across booking periods. Its spread (0.45) is an assumption: between 0.35 and 0.60 the gain against "
-        f"buckets stays between about +9% and +14%.\n\n"
+        f"and rise across booking periods. Its spread (0.45) is an assumption: {c.spread_text()}.\n\n"
         f"**Scope.** Revenue is for originating passengers on their outbound leg, in one-way-fare terms, for September 2025 "
         f"to February 2026 (winter only). See the Data Story page for limits.")

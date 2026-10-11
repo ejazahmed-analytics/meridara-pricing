@@ -168,7 +168,23 @@ CHANNEL_MIX = np.array([[.30, .08, .50, .12],   # placeholder, not calibrated
 DISPLACEMENT_PROB = {"low": .25, "shoulder": .40, "summer": .60, "christmas": .65}
 DISPLACEMENT_FARE = {1: [260, 480, 300, 190], 2: [1100, 1900, 1200, 800]}
 
-TARGET_BIAS = {1: 0.96, 2: 1.12, 3: 1.03, 4: 0.99, 5: 1.06, 6: 0.94}  # target / actual
+# Fares drift up with the market: +7.5% a year, centred on the middle of the window, so average yields stay
+# at the agreed means. Without growth, a budget of "last year plus 5 to 8%" could never be met.
+YIELD_TREND = 0.075
+TREND_MID = pd.Timestamp("2024-09-01")
+
+# Revenue budgets (set in advance, financial year April to March). After the first year a target is the same
+# month last year times the station growth factor. In the first year it is a planned seasonal curve scaled
+# to an annual budget built from capacity, planned load factor and planned fares. Nothing here uses the
+# actual revenue of the month being targeted.
+BUDGET_FY_START = "2024-04"                       # first month that has a prior-year actual to build on
+STATION_GROWTH = {1: 0.050, 3: 0.050, 4: 0.050, 5: 0.070, 6: 0.080}
+OWN_POS_PLAN = 0.50                               # planned share of a station's route revenue sold at its own POS
+PLAN_CABIN_SHARE = np.array([0.225, 0.035, 0.018])    # planned Business-cabin share of passengers by segment
+PLAN_YIELD_FACTOR = 0.88                          # planners allow for return-leg pricing and the low season
+PLAN_ANNUAL_LF = {1: 0.82, 3: 0.84, 4: 0.81, 5: 0.79, 6: 0.77}
+BERLIN_PLAN_LF = [0.50, 0.58, 0.66, 0.70, 0.72]   # launch plan by month since launch
+BERLIN_PLAN_INTRO = [0.90, 0.90, 0.90, 0.95, 1.00]  # introductory fares in the plan
 
 # ---------------------------------------------------------------------
 # Reference tables
@@ -645,10 +661,11 @@ def draw_journeys(f, O, spike, ctx, fx_rate, ladder, pro, rng):
     sf_norm = sf / ((weight * sf).sum() / weight.sum())               # seasonal premium averages to 1
     lift = np.where(season == "low", 1.0, STANDARD_SCALE)
     kind = (season != "low").astype(int)                              # 0 = low ladder, 1 = standard
+    trend = (1 + YIELD_TREND) ** ((f.departure_date - TREND_MID).dt.days.to_numpy() / 365.25)
     e_timing = WINDOW_SHARE @ WINDOW_TIMING
     timing = np.select([days >= 91, days >= 31, days >= 8], [.85, 1.0, 1.15], 1.30)
     noise = rng.lognormal(-0.5 * FARE_SIGMA ** 2, FARE_SIGMA, N)
-    target = (FARE_MEAN[ci, si] * price_idx[fi] * sf_norm[fi] * lift[fi]
+    target = (FARE_MEAN[ci, si] * price_idx[fi] * sf_norm[fi] * lift[fi] * trend[fi]
               * timing / e_timing[si] * noise)
     lad = ladder[route, ci, kind[fi]]
     rank = snap_to_ladder(target, lad)
@@ -718,17 +735,47 @@ def finish_bookings(legs, f, fx_rate, pro):
     return legs
 
 
-def build_revenue_targets(b, f, rng):
-    """Monthly target per European station POS, set relative to simulated revenue sold there."""
+def plan_leg_fare(station_id):
+    """Planned average revenue per passenger leg from the agreed fare means, mix and route price index."""
+    mix = np.array(SPEC[station_id]["mix"], float) / 100
+    per_segment = (1 - PLAN_CABIN_SHARE) * FARE_MEAN[0] + PLAN_CABIN_SHARE * FARE_MEAN[1]
+    return float((mix * per_segment).sum() * SPEC[station_id]["idx"] * PLAN_YIELD_FACTOR)
+
+
+def build_revenue_targets(b, f, routes):
+    """Monthly revenue target per European station point of sale, set in advance like a budget.
+
+    Years after the first: same month last year x the station growth factor.
+    First year: planned seasonal curve x an annual budget from capacity, planned load factor and planned fares.
+    Berlin: a launch plan from the scheduled flights, a load factor ramp and introductory fares.
+    """
+    stored = f[f.flight_id >= 1]
     month = f.departure_date.dt.strftime("%Y-%m").to_numpy()[b.fi.to_numpy()]
     sold = b.pos.to_numpy()
     keep = sold <= 6
-    actual = b[keep].groupby([sold[keep], month[keep]]).rev_eur.sum().reset_index()
-    actual.columns = ["station_id", "month", "actual"]
-    noise = rng.normal(0, 0.05, len(actual))
-    bias = actual.station_id.map(TARGET_BIAS)
-    actual["target_revenue_eur"] = (actual.actual * bias * (1 + noise) / 1000).round() * 1000
-    return actual[["station_id", "month", "target_revenue_eur"]]
+    actual = b[keep].groupby([sold[keep], month[keep]]).rev_eur.sum()
+    months = [str(m) for m in pd.period_range("2023-03", "2026-02", freq="M")]
+    curve = {m: MONTH_IDX[int(m[5:])] for m in months}
+    total_idx = sum(MONTH_IDX.values())
+    rows = []
+    for sid in (1, 3, 4, 5, 6):
+        seats_year = sum((r.seats_business + r.seats_economy) * r.weekly_frequency * 52
+                         for r in routes[routes.station_id == sid].itertuples())
+        annual_budget = seats_year * PLAN_ANNUAL_LF[sid] * plan_leg_fare(sid) * OWN_POS_PLAN
+        for m in months:
+            if m < BUDGET_FY_START:
+                target = annual_budget * curve[m] / total_idx
+            else:
+                last_year = str(pd.Period(m, freq="M") - 12)
+                target = actual[(sid, last_year)] * (1 + STATION_GROWTH[sid])
+            rows.append((sid, m, round(target / 1000) * 1000))
+    seats_per_flight = SPEC[2]["seats"][0] + SPEC[2]["seats"][1]
+    berlin_months = [m for m in months if m >= "2025-10"]
+    for k, m in enumerate(berlin_months):
+        n = int((stored[stored.station_id == 2].departure_date.dt.strftime("%Y-%m") == m).sum())
+        target = n * seats_per_flight * BERLIN_PLAN_LF[k] * plan_leg_fare(2) * BERLIN_PLAN_INTRO[k] * OWN_POS_PLAN
+        rows.append((2, m, round(target / 1000) * 1000))
+    return pd.DataFrame(rows, columns=["station_id", "month", "target_revenue_eur"])
 
 
 # ---------------------------------------------------------------------
@@ -802,7 +849,7 @@ def main():
     j = draw_journeys(f, O, spike, ctx, fx_rate, ladder, pro, rng)
     legs = trim_to_capacity(expand_legs(j, day), f, rng)
     b = finish_bookings(legs, f, fx_rate, pro)
-    targets = build_revenue_targets(b, f, rng)
+    targets = build_revenue_targets(b, f, routes)
 
     stored = f[f.flight_id >= 1]
     tables = {

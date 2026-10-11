@@ -163,8 +163,9 @@ CREATE TABLE displacement_costs (
 );
 
 -- Monthly revenue target per European station, in EUR, for the Station view.
--- Synthetic: set by the generator relative to simulated results so that some
--- stations beat target and others miss. Station revenue means revenue SOLD AT
+-- Synthetic budgets set in advance (financial year April to March): same month last year
+-- times a station growth factor, a planned seasonal curve in the first year, and a launch
+-- plan for Berlin. No target uses the actual revenue of its own month. Station revenue means revenue SOLD AT
 -- that station's point of sale (all routes), counted in the month each leg
 -- departs, converted at that month's rate.
 CREATE TABLE revenue_targets (
