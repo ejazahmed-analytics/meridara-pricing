@@ -85,7 +85,7 @@ SPECS = [
          lf=(69, 78, 90.5, 93), pro_adj=0.99),
     dict(station_id=6, band="Band 3", aircraft="Type C", seats=(16, 164), freq=4,
          days=[0, 2, 4, 6], idx=0.97, conn=0.55, mix=(20, 60, 20),
-         lf=(67, 76, 89.5, 92), pro_adj=1.01),
+         lf=(67, 76, 91, 92), pro_adj=1.01),
 ]
 SPEC = {s["station_id"]: s for s in SPECS}
 
@@ -306,7 +306,7 @@ def window_flag(f, events, family):
     stn = f["station_id"].to_numpy()
     for e in events[events.family == family].itertuples():
         hit = (dates >= e.start_date.to_datetime64()) & (dates <= e.end_date.to_datetime64())
-        if e.country is not None:
+        if pd.notna(e.country):
             hit &= np.isin(stn, [s for s, c in STATION_COUNTRY.items() if c == e.country])
         flag |= hit
     return flag
@@ -346,7 +346,7 @@ def build_flights(routes, events, rng):
     for fam in ("xmas", "diwali", "eid", "easter", "school_summer", "autumn"):
         for e in events[events.family == fam].itertuples():
             hit = (f.departure_date >= e.start_date) & (f.departure_date <= e.end_date)
-            if e.country is not None:
+            if pd.notna(e.country):
                 hit &= f.station_id.isin([s for s, c in STATION_COUNTRY.items() if c == e.country])
             f.loc[hit & f.event_id.isna(), "event_id"] = e.event_id
 

@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS model_metrics (
 
 -- Phase 4: price sensitivity estimates by segment.
 CREATE TABLE IF NOT EXISTS sensitivity_estimates (
+    sample          TEXT NOT NULL,        -- 'all training flights' or 'low-season flights'
     segment_id      INTEGER NOT NULL,
     parameter       TEXT NOT NULL,        -- 'price' or 'competitor'
     estimate        REAL NOT NULL,

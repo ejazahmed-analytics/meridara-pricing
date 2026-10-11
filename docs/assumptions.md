@@ -226,3 +226,15 @@ Bookings are generated as journeys. Each journey has a `journey_id`, a `trip_typ
 - Fares are converted to other currencies at the monthly average rate for the month each leg departs. A return fare is set once, in the sales currency, at the outbound month's rate. Burn-in months before March 2023 use the March 2023 rate.
 - USD pricing for Bangkok, Nairobi and Mumbai points of sale, and AED sales at the HUB.
 - The sales channel mix is a placeholder.
+
+## 14. Modelling choices in Phases 3 and 4
+
+- Forecast unit: final passengers per flight and segment (all cabins, all legs) at 90, 60, 30, 14 and 7 days before departure. Features use only bookings made by then. Berlin has no training rows and no route identifier is used, so the model scores it from route characteristics.
+- Baseline: historical pickup by route, segment and look-ahead point. Berlin borrows the average ratio of Frankfurt, Paris and Milan in the same direction.
+- Price sensitivity: Poisson regression on originating passengers (outbound legs) per flight and segment, estimated on training flights. Two samples are reported; the pricing replay uses the low-season sample because capacity limits bias the all-flights estimate toward zero.
+- Pricing replay: customers per flight, cabin and segment follow a constant-elasticity demand curve (lowest willingness to pay 30% of the reference price), sized from observed originating passengers and timed with the training booking curve. Both policies get the same customers.
+- Fence: Business-segment customers buy only the 6th price point or above, in both policies.
+- Forecast input to the replay: the gradient boosting forecast at 90 days, as a ratio to the actual, so real forecast errors (including Berlin's) flow through. Forecast uncertainty in EMSR-b is a 20% coefficient of variation. After each booking period both policies rescale the remaining demand forecast from actual sales (prior weight of 3 passengers).
+- Continuous pricing: price re-chosen each period to maximise price x min(expected remaining demand, remaining seats), within the lowest and highest price point of the route ladder.
+- Scenarios: base; forecast 15% too low; competitor index down 10% (using the estimated competitor effect); world elasticity at the low and high end of the estimated 95% range.
+- Model outputs live in `data/results.db`, separate from `data/meridara.db`.
