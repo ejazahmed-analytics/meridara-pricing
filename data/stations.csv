@@ -1,0 +1,12 @@
+station_id,station_name,region,role,sales_currency
+1,Frankfurt,Europe,featured,EUR
+2,Berlin,Europe,featured,EUR
+3,London,Europe,core,GBP
+4,Paris,Europe,core,EUR
+5,Milan,Europe,core,EUR
+6,Madrid,Europe,core,EUR
+7,Bangkok,Asia,beyond hub,USD
+8,Sydney,Australia,beyond hub,AUD
+9,Nairobi,Africa,beyond hub,USD
+10,Mumbai,South Asia,beyond hub,USD
+11,HUB,Hub,hub,AED

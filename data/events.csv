@@ -1,0 +1,41 @@
+event_id,event_name,start_date,end_date
+1,Christmas and New Year,2022-12-18,2023-01-05
+2,Christmas and New Year,2023-12-18,2024-01-05
+3,Christmas and New Year,2024-12-18,2025-01-05
+4,Christmas and New Year,2025-12-18,2026-01-05
+5,Easter holidays,2023-03-31,2023-04-14
+6,Easter holidays,2024-03-22,2024-04-05
+7,Easter holidays,2025-04-11,2025-04-25
+8,Eid al-Fitr,2023-04-11,2023-04-21
+9,Eid al-Fitr,2024-03-31,2024-04-10
+10,Eid al-Fitr,2025-03-21,2025-03-31
+11,Eid al-Adha,2023-06-18,2023-06-28
+12,Eid al-Adha,2024-06-06,2024-06-16
+13,Eid al-Adha,2025-05-27,2025-06-06
+14,Diwali,2023-11-02,2023-11-12
+15,Diwali,2024-10-21,2024-10-31
+16,Diwali,2025-10-10,2025-10-20
+17,School summer holidays (UK),2023-07-22,2023-09-03
+18,School summer holidays (DE),2023-07-05,2023-09-05
+19,School summer holidays (FR),2023-07-08,2023-09-01
+20,School summer holidays (IT),2023-06-10,2023-09-10
+21,School summer holidays (ES),2023-06-22,2023-09-08
+22,School summer holidays (UK),2024-07-22,2024-09-03
+23,School summer holidays (DE),2024-07-05,2024-09-05
+24,School summer holidays (FR),2024-07-08,2024-09-01
+25,School summer holidays (IT),2024-06-10,2024-09-10
+26,School summer holidays (ES),2024-06-22,2024-09-08
+27,School summer holidays (UK),2025-07-22,2025-09-03
+28,School summer holidays (DE),2025-07-05,2025-09-05
+29,School summer holidays (FR),2025-07-08,2025-09-01
+30,School summer holidays (IT),2025-06-10,2025-09-10
+31,School summer holidays (ES),2025-06-22,2025-09-08
+32,Autumn half-term (UK),2023-10-23,2023-10-27
+33,Autumn half-term (DE),2023-10-23,2023-10-27
+34,Autumn half-term (FR),2023-10-23,2023-10-27
+35,Autumn half-term (UK),2024-10-28,2024-11-01
+36,Autumn half-term (DE),2024-10-28,2024-11-01
+37,Autumn half-term (FR),2024-10-28,2024-11-01
+38,Autumn half-term (UK),2025-10-27,2025-10-31
+39,Autumn half-term (DE),2025-10-27,2025-10-31
+40,Autumn half-term (FR),2025-10-27,2025-10-31

@@ -1,0 +1,181 @@
+month,currency,rate_to_eur,source
+2023-03,EUR,1.0,Base currency
+2023-03,GBP,1.133889,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-03,USD,0.934071,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-03,AUD,0.623665,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-03,AED,0.254342,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2023-04,EUR,1.0,Base currency
+2023-04,GBP,1.134881,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-04,USD,0.911766,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-04,AUD,0.610176,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-04,AED,0.248269,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2023-05,EUR,1.0,Base currency
+2023-05,GBP,1.14889,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-05,USD,0.920175,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-05,AUD,0.611769,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-05,AED,0.250558,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2023-06,EUR,1.0,Base currency
+2023-06,GBP,1.164678,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-06,USD,0.922521,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-06,AUD,0.618922,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-06,AED,0.251197,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2023-07,EUR,1.0,Base currency
+2023-07,GBP,1.164746,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-07,USD,0.904311,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-07,AUD,0.608918,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-07,AED,0.246239,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2023-08,EUR,1.0,Base currency
+2023-08,GBP,1.164252,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-08,USD,0.916685,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-08,AUD,0.594586,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-08,AED,0.249608,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2023-09,EUR,1.0,Base currency
+2023-09,GBP,1.160653,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-09,USD,0.935996,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-09,AUD,0.601619,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-09,AED,0.254866,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2023-10,EUR,1.0,Base currency
+2023-10,GBP,1.152095,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-10,USD,0.946741,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-10,AUD,0.601076,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-10,AED,0.257792,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2023-11,EUR,1.0,Base currency
+2023-11,GBP,1.148826,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-11,USD,0.925221,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-11,AUD,0.601182,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-11,AED,0.251932,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2023-12,EUR,1.0,Base currency
+2023-12,GBP,1.16052,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-12,USD,0.917174,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-12,AUD,0.612704,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2023-12,AED,0.249741,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2024-01,EUR,1.0,Base currency
+2024-01,GBP,1.164509,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-01,USD,0.916999,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-01,AUD,0.608946,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-01,AED,0.249693,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2024-02,EUR,1.0,Base currency
+2024-02,GBP,1.170053,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-02,USD,0.926379,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-02,AUD,0.604837,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-02,AED,0.252248,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2024-03,EUR,1.0,Base currency
+2024-03,GBP,1.169266,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-03,USD,0.919777,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-03,AUD,0.602925,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-03,AED,0.25045,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2024-04,EUR,1.0,Base currency
+2024-04,GBP,1.167438,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-04,USD,0.932161,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-04,AUD,0.607186,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-04,AED,0.253822,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2024-05,EUR,1.0,Base currency
+2024-05,GBP,1.168715,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-05,USD,0.924879,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-05,AUD,0.612849,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-05,AED,0.251839,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2024-06,EUR,1.0,Base currency
+2024-06,GBP,1.181431,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-06,USD,0.929454,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-06,AUD,0.617069,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-06,AED,0.253085,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2024-07,EUR,1.0,Base currency
+2024-07,GBP,1.185793,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-07,USD,0.922162,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-07,AUD,0.615106,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-07,AED,0.251099,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2024-08,EUR,1.0,Base currency
+2024-08,GBP,1.174393,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-08,USD,0.908085,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-08,AUD,0.603886,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-08,AED,0.247266,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2024-09,EUR,1.0,Base currency
+2024-09,GBP,1.190175,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-09,USD,0.900414,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-09,AUD,0.609815,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-09,AED,0.245177,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2024-10,EUR,1.0,Base currency
+2024-10,GBP,1.197664,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-10,USD,0.917065,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-10,AUD,0.615401,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-10,AED,0.249711,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2024-11,EUR,1.0,Base currency
+2024-11,GBP,1.199346,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-11,USD,0.940721,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-11,AUD,0.614759,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-11,AED,0.256153,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2024-12,EUR,1.0,Base currency
+2024-12,GBP,1.207668,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-12,USD,0.954312,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-12,AUD,0.60501,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2024-12,AED,0.259854,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2025-01,EUR,1.0,Base currency
+2025-01,GBP,1.19178,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-01,USD,0.965836,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-01,AUD,0.601481,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-01,AED,0.262991,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2025-02,EUR,1.0,Base currency
+2025-02,GBP,1.20379,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-02,USD,0.960384,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-02,AUD,0.60503,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-02,AED,0.261507,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2025-03,EUR,1.0,Base currency
+2025-03,GBP,1.194707,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-03,USD,0.925342,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-03,AUD,0.582804,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-03,AED,0.251965,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2025-04,EUR,1.0,Base currency
+2025-04,GBP,1.171253,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-04,USD,0.891746,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-04,AUD,0.560428,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-04,AED,0.242817,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2025-05,EUR,1.0,Base currency
+2025-05,GBP,1.185543,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-05,USD,0.886678,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-05,AUD,0.570728,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-05,AED,0.241437,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2025-06,EUR,1.0,Base currency
+2025-06,GBP,1.176734,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-06,USD,0.868343,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-06,AUD,0.564243,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-06,AED,0.236445,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2025-07,EUR,1.0,Base currency
+2025-07,GBP,1.156488,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-07,USD,0.856394,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-07,AUD,0.559842,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-07,AED,0.233191,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2025-08,EUR,1.0,Base currency
+2025-08,GBP,1.1557,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-08,USD,0.85974,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-08,AUD,0.55803,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-08,AED,0.234102,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2025-09,EUR,1.0,Base currency
+2025-09,GBP,1.15082,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-09,USD,0.852353,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-09,AUD,0.561958,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-09,AED,0.232091,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2025-10,EUR,1.0,Base currency
+2025-10,GBP,1.147378,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-10,USD,0.859813,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-10,AUD,0.562413,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-10,AED,0.234122,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2025-11,EUR,1.0,Base currency
+2025-11,GBP,1.136409,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-11,USD,0.865037,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-11,AUD,0.562692,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-11,AED,0.235544,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2025-12,EUR,1.0,Base currency
+2025-12,GBP,1.142857,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-12,USD,0.854065,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-12,AUD,0.567099,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2025-12,AED,0.232557,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2026-01,EUR,1.0,Base currency
+2026-01,GBP,1.151701,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2026-01,USD,0.851917,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2026-01,AUD,0.577895,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2026-01,AED,0.231972,Derived from the USD rate using the fixed peg of 3.6725 AED per USD
+2026-02,EUR,1.0,Base currency
+2026-02,GBP,1.149009,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.GBP.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2026-02,USD,0.845741,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.USD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2026-02,AUD,0.596555,"ECB euro foreign exchange reference rates, monthly average, series EXR.M.AUD.EUR.SP00.A, ECB Data Portal (data-api.ecb.europa.eu)"
+2026-02,AED,0.23029,Derived from the USD rate using the fixed peg of 3.6725 AED per USD

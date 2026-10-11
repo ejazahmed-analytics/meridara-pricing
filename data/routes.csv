@@ -1,0 +1,13 @@
+route_id,station_id,direction,distance_band,aircraft_type,seats_business,seats_economy,weekly_frequency,price_index
+1,1,to_hub,Band 2,Type A,30,230,7,1.0
+2,1,from_hub,Band 2,Type A,30,230,7,1.0
+3,2,to_hub,Band 2,Type B,24,196,5,0.96
+4,2,from_hub,Band 2,Type B,24,196,5,0.96
+5,3,to_hub,Band 3,Type A,30,230,7,1.08
+6,3,from_hub,Band 3,Type A,30,230,7,1.08
+7,4,to_hub,Band 3,Type B,24,196,5,0.98
+8,4,from_hub,Band 3,Type B,24,196,5,0.98
+9,5,to_hub,Band 2,Type B,24,196,4,0.95
+10,5,from_hub,Band 2,Type B,24,196,4,0.95
+11,6,to_hub,Band 3,Type C,16,164,4,0.97
+12,6,from_hub,Band 3,Type C,16,164,4,0.97
