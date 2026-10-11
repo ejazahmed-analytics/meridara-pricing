@@ -19,7 +19,9 @@ This README is a placeholder. The full version is written in Phase 6.
 
 ## Data plan
 
-The generator produces 36 months of synthetic departures with a fixed random seed. The first 30 months are used to train the models and the last 6 months are held out for testing.
+The generator produces 36 months of synthetic departures (March 2023 to February 2026) with a fixed random seed. The first 30 months (March 2023 to August 2025) are used to train the models and the last 6 months (September 2025 to February 2026) are held out for testing.
+
+The window ends in February 2026 and does not model events from March 2026 onward. Berlin launches on 26 October 2025, inside the held-out window.
 
 ## About the author
 

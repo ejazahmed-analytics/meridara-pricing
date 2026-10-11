@@ -24,3 +24,6 @@ Thumbs.db
 
 # Private working brief (names real carriers in its guardrails)
 PROJECT_BRIEF.md
+
+# Large generated file, rebuilt from the fixed seed by src/generate_data.py
+data/bookings.csv
