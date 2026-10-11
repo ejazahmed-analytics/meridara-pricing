@@ -44,16 +44,21 @@ Mean paid, with P10 to P90 in brackets.
 - Route price index: Frankfurt 1.00, London 1.08, Paris 0.98, Milan 0.95, Madrid 0.97, Berlin 0.96. Berlin has a further 10% introductory discount for its first 3 months.
 - Share of each segment in the Business cabin: Business 35%, Leisure 6%, VFR 3%.
 
-### Connecting passengers: two fare fields
+### Connecting passengers: through fare plus a proration table
 
-Each connecting booking stores both:
+To keep the database small, the bookings table stores only one fare:
 
 - **through_fare**: the full fare for the whole journey, in the sales currency.
-- **leg_fare**: the prorated share attributed to this flight.
 
-Local bookings have through_fare equal to leg_fare.
+The leg share is held in a small `proration_factors` table (one row per route, beyond-hub city and cabin). A SQL view, `v_bookings_with_leg_fare`, derives:
 
-Prorated leg share relative to the local average on the same leg:
+- **leg_fare** = through_fare x proration factor.
+
+Local bookings have no beyond-hub city and use a factor of 1, so leg_fare equals through_fare.
+
+Simplification: because the factor is fixed per route, city and cabin, leg_fare varies only with through_fare. Real prorates also vary by fare type and date.
+
+Proration factor ranges (leg share of the through fare, set so the leg fare relative to the local average on the same leg falls in these ranges):
 
 | Cabin | Connecting leg share of local average |
 | --- | --- |
@@ -140,7 +145,7 @@ The held-out window (September 2025 to February 2026) contains Diwali 2025, Chri
 | --- | --- |
 | Flights | about 8,600 |
 | Bookings | about 0.9 to 1.0 million rows |
-| Database size target | under 40 MB, hard ceiling 50 MB. The two fare fields add roughly 2 to 3 MB, so the estimate is about 32 to 41 MB. It will be measured after generation. |
-| Safety lever | If the measured size is over 40 MB, reduce the Madrid and Milan frequencies or raise the party size, then rerun. |
+| Database size target | under 50 MB. Storing one fare plus a proration table keeps the estimate at about 30 to 38 MB. It will be measured after generation. |
+| Safety lever | Frequencies stay as designed. Only if the measured size is still over 50 MB, reduce the Madrid and Milan frequencies or raise the party size, then rerun. |
 | Git | The database and small CSVs are committed. The large bookings CSV is not committed, because the fixed seed regenerates it. |
 | booking_date | Not stored. Derived in a SQL view as departure date minus days before departure. |

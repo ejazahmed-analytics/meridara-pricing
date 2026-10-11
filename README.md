@@ -23,6 +23,13 @@ The generator produces 36 months of synthetic departures (March 2023 to February
 
 The window ends in February 2026 and does not model events from March 2026 onward. Berlin launches on 26 October 2025, inside the held-out window.
 
+## Limitations
+
+- The test window (September 2025 to February 2026) covers winter only. It has no summer peak, no Easter and no Eid, so the reported forecast accuracy reflects those conditions and may not hold in other seasons.
+- The window ends in February 2026 and does not model events from March 2026 onward.
+
+More limitations are added in Phase 6.
+
 ## About the author
 
 Ejaz Ahmed, GitHub: [ejazahmed-analytics](https://github.com/ejazahmed-analytics)
