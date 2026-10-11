@@ -33,6 +33,7 @@ Short version for screenshots: Fictional airline, simulated data. For illustrati
 - Network target: about 80%.
 - Direction effect: Europe-origin flights peak in late June to July and at Christmas. Return flights peak in late August and early January (3 to 5 points).
 - Weekday effect: Tuesday to Thursday and Sunday run about 3 points higher on business-heavy routes.
+- Generator calibration: because whole journeys are dropped when a leg is full (spill), the generator's summer and Christmas inputs are set about 2 points above the midpoints of these ranges. The achieved load factors are what the ranges refer to, and the sanity checks confirm they fall inside.
 - The 1 to 17 December period is treated as shoulder. The owner's list of shoulder months did not mention it, so this is an assumption to confirm.
 - Seasons for pricing: low = January, February, November; shoulder = March to June, September, October and 1 to 17 December; peak = July, August and 18 December to 5 January.
 
@@ -113,9 +114,9 @@ The local mix is backed out of the route mix after removing the connecting flows
 
 | Segment | 330-181 | 180-91 | 90-61 | 60-31 | 30-15 | 14-8 | 7-0 | Average days out |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Business | 2% | 6% | 8% | 18% | 24% | 22% | 20% | about 26 |
-| Leisure | 14% | 28% | 20% | 18% | 11% | 6% | 3% | about 95 |
-| VFR | 20% | 25% | 15% | 17% | 12% | 6% | 5% | about 105 |
+| Business | 2% | 6% | 8% | 18% | 24% | 22% | 20% | about 36 |
+| Leisure | 14% | 28% | 20% | 18% | 11% | 6% | 3% | about 100 |
+| VFR | 20% | 25% | 15% | 17% | 12% | 6% | 5% | about 107 |
 
 - These curves describe the booking time of the OUTBOUND leg of a journey (or a one-way journey).
 - An inbound leg is booked at the same time as its outbound leg, so its days before departure equal the outbound value plus the stay. Flight-level booking curves are therefore a blend of both.
@@ -185,7 +186,7 @@ Bookings are generated as journeys. Each journey has a `journey_id`, a `trip_typ
 | VFR | 80% | 18% | 2% |
 
 - Origin and destination: a local journey runs between a European station and the HUB. A connecting journey runs between a European station and a beyond-hub city, via the HUB. The third station is drawn from Frankfurt, London, Paris, Milan, Madrid and the four beyond-hub cities, excluding the origin and destination. Berlin and the HUB are not third stations (Berlin had no sales office before launch).
-- Revenue targets are by point of sale: station revenue is revenue sold at that station's POS (all routes, both legs), counted in the month each leg departs and converted at that month's rate. Targets are synthetic: each month's target is simulated revenue times a fixed station bias (Frankfurt 0.96, Berlin 1.12, London 1.03, Paris 0.99, Milan 1.06, Madrid 0.94) and 3% noise. A bias below 1 means the station beats target. Berlin has targets from October 2025.
+- Revenue targets are by point of sale: station revenue is revenue sold at that station's POS (all routes, both legs), counted in the month each leg departs and converted at that month's rate. Targets are synthetic: each month's target is simulated revenue times a fixed station bias (Frankfurt 0.96, Berlin 1.12, London 1.03, Paris 0.99, Milan 1.06, Madrid 0.94) and 5% noise. A bias below 1 means the station beats target. Berlin has targets from October 2025.
 - The Station view splits revenue sold at a station into origin-sold (the journey started there) and foreign-origin-sold (the journey started elsewhere and was sold there).
 - Sales channels (Airline direct, NDC, GDS, OTA) are assigned with a placeholder mix by segment. They are stored for a later project and are not analysed in Project 1.
 

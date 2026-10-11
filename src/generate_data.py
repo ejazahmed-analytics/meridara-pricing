@@ -63,27 +63,29 @@ STATIONS = [
 STATION_COUNTRY = {1: "DE", 2: "DE", 3: "UK", 4: "FR", 5: "IT", 6: "ES"}
 
 # One spec per European station (each makes two directional routes).
-# lf = midpoint load factor in % for (low, shoulder, summer, christmas).
+# lf = generator load factor input in % for (low, shoulder, summer, christmas). Summer and
+# Christmas values sit about 2 points above the agreed range midpoints to offset spill
+# (whole journeys are dropped when a leg is full), so achieved load factors land in the ranges.
 # mix = passenger mix % (business, leisure, VFR); conn = connecting share.
 SPECS = [
     dict(station_id=1, band="Band 2", aircraft="Type A", seats=(30, 230), freq=7,
          days=[0, 1, 2, 3, 4, 5, 6], idx=1.00, conn=0.45, mix=(38, 42, 20),
-         lf=(73, 81, 90.5, 92.5), pro_adj=1.00),
+         lf=(73, 81, 92.5, 95), pro_adj=1.00),
     dict(station_id=2, band="Band 2", aircraft="Type B", seats=(24, 196), freq=5,
          days=[0, 1, 3, 4, 6], idx=0.96, conn=0.60, mix=(22, 50, 28),
          lf=(0, 0, 0, 0), pro_adj=0.99),   # Berlin load factor comes from a ramp
     dict(station_id=3, band="Band 3", aircraft="Type A", seats=(30, 230), freq=7,
          days=[0, 1, 2, 3, 4, 5, 6], idx=1.08, conn=0.40, mix=(40, 36, 24),
-         lf=(75, 83, 91.5, 93.5), pro_adj=1.02),
+         lf=(75, 83, 93.5, 96), pro_adj=1.02),
     dict(station_id=4, band="Band 3", aircraft="Type B", seats=(24, 196), freq=5,
          days=[0, 1, 3, 4, 6], idx=0.98, conn=0.50, mix=(28, 50, 22),
-         lf=(71, 80, 89.5, 91.5), pro_adj=1.01),
+         lf=(71, 80, 91.5, 94), pro_adj=1.01),
     dict(station_id=5, band="Band 2", aircraft="Type B", seats=(24, 196), freq=4,
          days=[0, 2, 4, 6], idx=0.95, conn=0.55, mix=(30, 50, 20),
-         lf=(69, 78, 88.5, 90.5), pro_adj=0.99),
+         lf=(69, 78, 90.5, 93), pro_adj=0.99),
     dict(station_id=6, band="Band 3", aircraft="Type C", seats=(16, 164), freq=4,
          days=[0, 2, 4, 6], idx=0.97, conn=0.55, mix=(20, 60, 20),
-         lf=(67, 76, 87.5, 89.5), pro_adj=1.01),
+         lf=(67, 76, 89.5, 92), pro_adj=1.01),
 ]
 SPEC = {s["station_id"]: s for s in SPECS}
 
@@ -709,7 +711,7 @@ def build_revenue_targets(b, f, rng):
     keep = sold <= 6
     actual = b[keep].groupby([sold[keep], month[keep]]).rev_eur.sum().reset_index()
     actual.columns = ["station_id", "month", "actual"]
-    noise = rng.normal(0, 0.03, len(actual))
+    noise = rng.normal(0, 0.05, len(actual))
     bias = actual.station_id.map(TARGET_BIAS)
     actual["target_revenue_eur"] = (actual.actual * bias * (1 + noise) / 1000).round() * 1000
     return actual[["station_id", "month", "target_revenue_eur"]]
