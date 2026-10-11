@@ -11,9 +11,9 @@ This README is a placeholder. The full version is written in Phase 6.
 | Phase | Description | Status |
 | --- | --- | --- |
 | 1 | Setup | Done |
-| 2 | Data | In progress |
-| 3 | Forecast | Not started |
-| 4 | Sensitivity and simulation | Not started |
+| 2 | Data | Done |
+| 3 | Forecast | Done |
+| 4 | Sensitivity and simulation | Done |
 | 5 | App | Not started |
 | 6 | Publish | Not started |
 
