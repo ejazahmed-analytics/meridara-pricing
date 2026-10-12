@@ -37,7 +37,7 @@ def render(cur):
     h = c.headline(cur)
     s, obs, bk, ct, lf = h["s"], h["obs"], h["bk"], h["ct"], h["lf"]
     feed = network.feed_table(cur)
-    ll = feed[feed.Segment.isin(["Leisure", "VFR"])]
+    ll = feed
     lost_pax = ll["As flown"].sum() - ll["Continuous"].sum()
     lost_conn, lost_conn_lf = ll["Lost connecting pax"].sum(), ll["Lost connecting pax (floor)"].sum()
     lost_contrib = ll[f"Lost network contribution ({cur} k)"].sum() * 1e3
@@ -57,7 +57,7 @@ def render(cur):
               f"{h['gain']:+.1f}%.")
     with b:
         _team(c.TEAL, "Network Revenue and Inventory (HO)", f"{lost_conn:,.0f} connecting pax lost",
-              f"Worried about feed: {lost_pax:,.0f} fewer Leisure and VFR passengers, about {lost_conn:,.0f} connecting, "
+              f"Worried about feed: {lost_pax:,.0f} fewer passengers than as flown, about {lost_conn:,.0f} connecting, "
               f"worth roughly {c.money(lost_contrib, cur, 'k')} of network contribution.")
     with d:
         _team(c.CORAL, "Station (GM and Sales - local Market)", f"{h['pax_ct']:+.1f}% volume",
@@ -90,7 +90,7 @@ def render(cur):
     st.markdown(
         f'<div class="callout"><div class="callout-title">Recommendation</div>'
         f'<div class="callout-main">Continuous pricing with a route-level load factor floor</div>'
-        f'Revenue {h["gain_lf_bk"]:+.1f}% against the bucket rule ({c.money(lf.revenue, cur)} vs {c.money(bk.revenue, cur)}) '
+        f'Revenue {h["gain_lf_bk"]:+.1f}% against the validated bucket baseline ({c.money(lf.revenue, cur)} vs {c.money(bk.revenue, cur)}) '
         f'at a load factor of {lf.load_factor:.1f}%, level with as flown ({obs.load_factor:.1f}%). Without the floor about '
         f'{lost_conn:,.0f} connecting passengers are lost; {network.floor_phrase(lost_conn_lf)}. Against as flown revenue is '
         f'{h["gain_lf"]:+.1f}%.</div>',

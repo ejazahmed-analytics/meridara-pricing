@@ -47,7 +47,7 @@ def render(cur):
     fb = c.query("data", "SELECT ladder, price_point_eur FROM fare_buckets WHERE route_id = 1 AND cabin_id = 1 AND class_rank = 10").set_index("ladder").price_point_eur
     ladder_scale = fb["standard"] / fb["low"]
     feed = network.feed_table(cur)
-    ll = feed[feed.Segment.isin(["Leisure", "VFR"])]
+    ll = feed
     lost_conn, lost_conn_lf = ll["Lost connecting pax"].sum(), ll["Lost connecting pax (floor)"].sum()
     st_tbl = summary.station_table(cur)
     below = st_tbl[st_tbl["Revenue vs target %"] < 100]
@@ -203,25 +203,62 @@ def render(cur):
                  f"If customers are at the high end of the estimated range, continuous pricing earns {ela_chg:+.1f}% against buckets.")
     st.markdown('<div class="gap"></div>', unsafe_allow_html=True)
 
-    # 5 and 6: drafts
+    # 5 and 6: analyst reading and recommendation, every figure read from the results database
+    cal = c.calibration()["training"]
+    gains = {k: 100 * (c.policy_row(s, k, "continuous").revenue / c.policy_row(s, k, "buckets").revenue - 1)
+             for k in ("base", "underforecast", "competitor_cut", "elastic_world", "inelastic_world")}
+    g_lo, g_hi = min(gains.values()), max(gains.values())
+    seg = c.sim_by(cur, "segment_id").pivot(index="segment_id", columns="policy", values="revenue_eur")
+    seg_gain = 100 * (seg["continuous"] / seg["buckets"] - 1)
+    biz_gain = seg_gain[1]
+    ll_gain = ", ".join(f"{c.SEGMENT_NAMES[i]} {seg_gain[i]:+.0f}%" for i in (2, 3))
+
     st.markdown("#### 5. How I read it as an analyst")
-    st.markdown('<div class="draft">DRAFT - for the author to rewrite in their own words</div>', unsafe_allow_html=True)
     st.markdown(
-        f"On the same customers continuous pricing beats the validated bucket baseline, but unconstrained it does so by "
-        f"selling fewer seats at higher prices. Business customers are barely price sensitive, so higher prices cost little volume there, while Leisure "
-        f"and VFR customers are price sensitive and walk away, and that is where the connecting passengers sit: about "
-        f"{lost_conn:,.0f} are priced out. The forecast is good enough to price from on established routes and not yet on "
-        f"Berlin. The result also leans on a price sensitivity estimate with a wide range, so I would not roll it out "
-        f"everywhere at once.")
+        f"The first thing I look for is whether the baseline is believable. Before measuring any improvement, I replayed the "
+        f"traditional fare bucket policy on historical data and checked that it reproduced what actually happened. It came within "
+        f"about {abs(cal['rev_gap']):.0f}% of actual revenue and within {abs(cal['lf_gap']):.1f} points of actual load factor. "
+        f"Only then did I trust the comparison.")
+    st.markdown(
+        f"With that baseline in place, continuous pricing adds around {h['gain_bk']:.0f}% revenue. That is a meaningful gain for a "
+        f"hub carrier, but I read it as a range rather than a promise. If customers are more price sensitive than my estimate, the "
+        f"gain shrinks to about {gains['elastic_world']:.1f}%. In the most favourable case it reaches about {g_hi:.0f}%. So the "
+        f"honest answer is “a few percent,” and the real value is that it holds up in every stress test, including a "
+        f"competitor price cut and a forecast that underestimates demand.")
+    st.markdown(
+        f"The more interesting finding is where the gain comes from. Business revenue barely moves ({biz_gain:+.1f}%), because "
+        f"traditional fare buckets already capture most of its value. The gain comes from Leisure and VFR ({ll_gain}), where "
+        f"passengers are price sensitive and finer price steps fill seats that fixed buckets either give away too cheaply or "
+        f"price out entirely.")
+    st.markdown("This is also where the three teams see the result differently:")
+    st.markdown(
+        f"- Pricing and Revenue Management sees a revenue gain and will want to roll it out.\n"
+        f"- Network Revenue and Inventory will worry about load factor, because unconstrained continuous pricing lets it fall from "
+        f"about {bk.load_factor:.0f}% to {ct.load_factor:.0f}%. Fewer passengers means less connecting feed into the long-haul "
+        f"network and less ancillary and cargo revenue.\n"
+        f"- The station will look at volumes against its sales targets, and at markets like Berlin, where the forecast is still "
+        f"learning and the price recommendations are least reliable.")
+    st.markdown(
+        f"My role is to show that these positions are not in conflict once the right constraint is added. When each route is held at "
+        f"its current load factor, continuous pricing earns slightly more than the unconstrained version, about "
+        f"{h['gain_lf_bk']:.1f}% above the baseline, without giving up any volume.")
+
     st.markdown("#### 6. Recommendation")
-    st.markdown('<div class="draft">DRAFT - for the author to rewrite in their own words</div>', unsafe_allow_html=True)
+    st.markdown("I recommend continuous pricing with a route-level load factor floor, introduced in phases rather than across the "
+                "network at once.")
     st.markdown(
-        f'<div class="callout"><div class="callout-main">Adopt continuous pricing with a route-level load factor floor</div>'
-        f'Revenue {h["gain_lf_bk"]:+.1f}% against the bucket rule at a load factor of {lf.load_factor:.0f}% (as flown '
-        f'{obs.load_factor:.0f}%). Without the floor about '
-        f'{lost_conn:,.0f} connecting passengers are lost; {network.floor_phrase(lost_conn_lf)}. Start on the established '
-        f'routes, keep bucket control on Berlin for its first weeks, and re-estimate price sensitivity from live promotions '
-        f'every quarter.</div>', unsafe_allow_html=True)
+        f"1. **Pilot first.** Start with two or three mature European markets, such as Frankfurt and Paris, where history is "
+        f"deepest and the forecast is most accurate. Run the pilot against a control group of comparable flights for at least one "
+        f"full season.\n"
+        f"2. **Protect the network.** Set each route’s load factor floor at its current level, agreed jointly by Pricing and "
+        f"Network Revenue, so the revenue gain never comes at the expense of connecting feed.\n"
+        f"3. **Keep new markets on proven methods.** Berlin and other launch markets should stay on traditional fare buckets, "
+        f"supported by pickup patterns borrowed from similar markets, until they have several months of their own booking "
+        f"history.\n"
+        f"4. **Measure what matters.** Track revenue, load factor and connecting passengers by route, and review the price "
+        f"sensitivity estimates after the pilot, since they drive most of the uncertainty in the result.\n"
+        f"5. **Decide on evidence.** Expand only if the pilot confirms a gain within the expected {g_lo:.0f} to {g_hi:.0f}% range, "
+        f"without a drop in load factor or connecting traffic.")
     st.markdown('<div class="gap"></div>', unsafe_allow_html=True)
 
     # 7. Actions

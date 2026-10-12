@@ -60,7 +60,7 @@ def render(cur):
     ac = _contribution(cur, sid)
     ac_c = ac[ac.cabin_id == cid]
     feed = feed_table(cur)
-    ll = feed[feed.Segment.isin(["Leisure", "VFR"])]
+    ll = feed
     lost_conn, lost_floor = ll["Lost connecting pax"].sum(), ll["Lost connecting pax (floor)"].sum()
 
     mix = rmth.groupby("traffic_type").pax.sum()
@@ -74,7 +74,7 @@ def render(cur):
         ("Connecting share of passengers", f"{conn_share:.0f}%", scope if sid else "whole network", c.ROYAL),
         (f"Connecting contribution, {cabin}", f"{contrib_avg:,.0f}", f"{cur} per passenger vs local leg {local_avg:,.0f}",
          c.TEAL, f"{100 * (contrib_avg / local_avg - 1):+.0f}%", contrib_avg >= local_avg),
-        ("Connecting pax lost, continuous", f"{lost_conn:,.0f}", "Leisure and VFR, held-out flights", c.CORAL,
+        ("Connecting pax lost, continuous", f"{lost_conn:,.0f}", "all segments, held-out flights", c.CORAL,
          f"-{lost_conn:,.0f}", False),
         ("Connecting feed with floor", f"{-lost_floor:+,.0f}", "connecting passengers vs as flown", c.AMBER),
     ])
