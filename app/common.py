@@ -169,7 +169,7 @@ def floor_vs_continuous(h):
 
 def money(x, cur, unit="m"):
     """Format a money amount, for example 'EUR 84.7m'."""
-    if unit == "m":
+    if unit == "m" or (unit == "k" and abs(x) >= 1e6):
         return f"{cur} {x / 1e6:,.1f}m"
     if unit == "k":
         return f"{cur} {x / 1e3:,.0f}k"
