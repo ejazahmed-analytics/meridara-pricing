@@ -88,9 +88,9 @@ def render(cur):
             "**One external source.** Exchange rates are the European Central Bank euro foreign exchange reference rates "
             "(monthly averages for GBP, USD and AUD; ECB Data Portal series EXR.M.GBP.EUR.SP00.A, EXR.M.USD.EUR.SP00.A and "
             "EXR.M.AUD.EUR.SP00.A). AED is derived from the USD peg of 3.6725 AED per USD.\n\n"
-            "**Calibration.** Load factors, fare levels and seasonality are set inside ranges seen in published airport "
-            "traffic statistics and airline annual reports; the specific sources are cited in the README. The numbers are "
-            "generator inputs, documented in `docs/assumptions.md`, not results.")
+            "**Assumptions.** Load factors, fares, segment mix and booking curves are illustrative, based on the author's "
+            "industry experience and typical published ranges. The numbers are generator inputs, documented in "
+            "`docs/assumptions.md`, not results.")
 
     c.notes(
         "**Train and test.** The first 30 months (March 2023 to August 2025) train the models; the last six months "

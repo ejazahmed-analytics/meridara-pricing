@@ -278,7 +278,7 @@ def render(cur):
     st.markdown("#### 8. Limitations and next steps")
     with st.expander("How to read this"):
         st.markdown(
-            "- All data is simulated and the carrier is fictional; public figures used for calibration are cited in the README.\n"
+            "- All data is simulated and the carrier is fictional; sources and assumptions are described in the README.\n"
             "- The test window is winter only (no summer peak, Easter or Eid), so accuracy may not hold in other seasons.\n"
             "- Observed bookings are capped by seats, so demand on full flights is understated and the replay is conservative there.\n"
             "- The replay prices originating passengers on their outbound leg only, ignores network effects beyond a simple "
