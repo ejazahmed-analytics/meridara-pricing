@@ -13,7 +13,7 @@ def render(cur):
     s, obs, bk, ct, lf = h["s"], h["obs"], h["bk"], h["ct"], h["lf"]
     cal = c.calibration()
     tr = cal["training"]
-    c.hero("From Fare Buckets to Continuous Pricing", "Pricing the Europe to Asia corridor at a hub carrier", cur)
+    c.hero("From Fare Buckets to Continuous Pricing", "Pricing the Europe to Asia corridor at a hub carrier", cur, full=True)
 
     c.kpi_row([
         ("Continuous vs validated buckets", f"{h['gain_bk']:+.1f}%", f"{c.money(ct.revenue, cur)} vs {c.money(bk.revenue, cur)}",

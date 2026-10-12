@@ -25,6 +25,7 @@ DISCLAIMER = (
     "with or endorsed by any employer, past or present."
 )
 SHORT_DISCLAIMER = "Fictional airline, simulated data. For illustration only."
+DISCLAIMER_LINE = "<b>Fictional airline, simulated data. Not affiliated with any employer.</b>"
 
 # Palette: navy text and header, royal blue and teal as main accents, coral for highlights, amber for small touches.
 NAVY, ROYAL, TEAL, CORAL, AMBER = "#0B1F3A", "#1F4FD8", "#0E8F8F", "#F0644D", "#E5A800"
@@ -186,8 +187,8 @@ def pct(x, signed=False, digits=1):
     return f"{x:+.{digits}f}%" if signed else f"{x:.{digits}f}%"
 
 
-def hero(title, question, cur=None):
-    """Navy header band: title and question on the left, small pills on the right, then the disclaimer."""
+def hero(title, question, cur=None, full=False):
+    """Navy header band: title and question on the left, small pills on the right, then the disclaimer (full on the Overview, a one-line version with an expander elsewhere)."""
     pills = ["Fictional carrier", "Simulated data", "Held out: Sep 2025 to Feb 2026"]
     if cur:
         pills.append(f"Currency: {cur}")
@@ -196,7 +197,12 @@ def hero(title, question, cur=None):
                 f'<div class="hero-title">{title}</div>'
                 f'<div class="hero-q">{question}</div></div><div class="hero-pills">{pill_html}</div></div>',
                 unsafe_allow_html=True)
-    st.markdown(f'<div class="disclaimer">{DISCLAIMER}</div>', unsafe_allow_html=True)
+    if full:
+        st.markdown(f'<div class="disclaimer">{DISCLAIMER}</div>', unsafe_allow_html=True)
+    else:
+        st.markdown(f'<div class="disclaimer disclaimer-short">{DISCLAIMER_LINE}</div>', unsafe_allow_html=True)
+        with st.expander("Read full disclaimer"):
+            st.markdown(f'<div class="disclaimer-full">{DISCLAIMER}</div>', unsafe_allow_html=True)
 
 
 def kpi_row(items):
@@ -296,6 +302,8 @@ html, body, [data-testid="stMain"], section.main {{ scroll-padding-top: 4rem; }}
 .disclaimer {{ background: #FFF6DD; border: 1px solid #F0DFA6; border-left: 6px solid {AMBER}; color: {NAVY};
                padding: 0.5rem 0.8rem; font-size: 0.78rem; line-height: 1.4; border-radius: 4px; margin: 0 0 1rem 0; }}
 .disclaimer b {{ color: {NAVY}; }}
+.disclaimer-short {{ padding: 0.45rem 0.8rem; margin-bottom: 0.4rem; }}
+.disclaimer-full {{ color: {NAVY}; font-size: 0.85rem; line-height: 1.45; }}
 
 /* KPI cards: white, coloured top border, bold number, delta badge */
 .kpi {{ background: #FFFFFF; border-radius: 8px; border-top: 5px solid {ROYAL}; padding: 0.75rem 1rem 0.8rem 1rem;
