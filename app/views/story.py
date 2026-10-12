@@ -65,7 +65,7 @@ def render(cur):
         f'<div class="story-stats">'
         f'<div><div class="story-num">{h["gain_bk"]:+.1f}%</div><div class="story-cap">Continuous vs validated buckets</div></div>'
         f'<div><div class="story-num">{h["gain_lf_bk"]:+.1f}%</div><div class="story-cap">Route floor vs validated buckets, at the as-flown load factor</div></div>'
-        f'<div><div class="story-num">{h["gain"]:+.1f}%</div><div class="story-cap">Continuous vs as flown (reference)</div></div>'
+        f'<div><div class="story-num">{h["gain_range"][0]:.0f} to {h["gain_range"][1]:.0f}%</div><div class="story-cap">Plausible range across stress tests</div></div>'
         f'<div><div class="story-num">{g90:.0f}%</div><div class="story-cap">Forecast error at 90 days (baseline {b90:.0f}%)</div></div>'
         f'</div></div>', unsafe_allow_html=True)
 

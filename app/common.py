@@ -19,7 +19,7 @@ DISCLAIMER = (
     "<b>Illustrative case study using fictitious and simulated data.</b> Meridara is a fictional airline. "
     "All bookings, fares, seat volumes, revenue figures, forecasts and results in this project are "
     "synthetically generated and do not represent the commercial performance, data, systems or practices "
-    "of any real airline, airport, agency or data provider. Public figures used for calibration are cited "
+    "of any real airline, airport, agency or data provider. Sources and assumptions are described "
     "in the README. Methods follow published revenue management literature. This project is a personal "
     "portfolio piece created to demonstrate analytical and data science capability, and is not affiliated "
     "with or endorsed by any employer, past or present."
@@ -128,6 +128,12 @@ def calibration():
     return out
 
 
+def gain_range(s):
+    """Lowest and highest gain of continuous pricing over validated buckets across the stress-test scenarios, in %."""
+    g = [100 * (policy_row(s, k, "continuous").revenue / policy_row(s, k, "buckets").revenue - 1) for k in s.scenario.unique()]
+    return min(g), max(g)
+
+
 def headline(cur):
     """The numbers the Overview, Analyst summary and Data Story all quote."""
     s = sim_summary(cur)
@@ -135,7 +141,7 @@ def headline(cur):
     return dict(s=s, obs=obs, bk=bk, ct=ct, lf=lf,
                 gain=100 * (ct.revenue / obs.revenue - 1), gain_bk=100 * (ct.revenue / bk.revenue - 1),
                 gain_lf=100 * (lf.revenue / obs.revenue - 1), bk_vs_obs=100 * (bk.revenue / obs.revenue - 1),
-                gain_lf_bk=100 * (lf.revenue / bk.revenue - 1),
+                gain_lf_bk=100 * (lf.revenue / bk.revenue - 1), gain_range=gain_range(s),
                 pax_ct=100 * (ct.pax / obs.pax - 1), pax_lf=100 * (lf.pax / obs.pax - 1))
 
 

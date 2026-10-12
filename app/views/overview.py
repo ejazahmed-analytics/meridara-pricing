@@ -22,7 +22,8 @@ def render(cur):
          c.TEAL),
         ("Bucket baseline check", f"{tr['rev_gap']:+.1f}%", f"revenue vs as flown in the training period; load factor "
          f"{tr['lf_gap']:+.1f} pts", c.AMBER),
-        ("Continuous vs as flown", f"{h['gain']:+.1f}%", f"as flown {c.money(obs.revenue, cur)}, for reference", c.CORAL),
+        ("Plausible range across stress tests", f"{h['gain_range'][0]:.0f} to {h['gain_range'][1]:.0f}%",
+         "continuous pricing vs validated buckets", c.CORAL),
     ])
 
     order = ["observed", "buckets", "continuous", "continuous_lf"]

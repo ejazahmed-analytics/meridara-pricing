@@ -2,7 +2,7 @@
 
 Pricing the Europe to Asia corridor at a hub carrier.
 
-> **Illustrative case study using fictitious and simulated data.** Meridara is a fictional airline. All bookings, fares, seat volumes, revenue figures, forecasts and results in this project are synthetically generated and do not represent the commercial performance, data, systems or practices of any real airline, airport, agency or data provider. Public figures used for calibration are cited in the README. Methods follow published revenue management literature. This project is a personal portfolio piece created to demonstrate analytical and data science capability, and is not affiliated with or endorsed by any employer, past or present.
+> **Illustrative case study using fictitious and simulated data.** Meridara is a fictional airline. All bookings, fares, seat volumes, revenue figures, forecasts and results in this project are synthetically generated and do not represent the commercial performance, data, systems or practices of any real airline, airport, agency or data provider. Sources and assumptions are described in the README. Methods follow published revenue management literature. This project is a personal portfolio piece created to demonstrate analytical and data science capability, and is not affiliated with or endorsed by any employer, past or present.
 
 ## The business problem
 
@@ -10,7 +10,7 @@ Most airlines sell each flight from about ten filed fare buckets and open or clo
 
 ## Live app
 
-**Live link: coming soon** (to be added once the app is deployed).
+**[meridara-pricing.streamlit.app](https://meridara-pricing.streamlit.app)**
 
 ## Headline result
 
